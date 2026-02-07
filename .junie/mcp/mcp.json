@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "/usr/bin/php8.3",
+            "args": [
+                "/home/vagrant/projects/laravel-social-media-manager/artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}

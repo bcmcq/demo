@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Prompt logging
 
-When the user sends a prompt in this project, you must:
+When the user sends a prompt in this project, the FIRST thing you must do is:
 
 **Append the prompt to the log**
 Append one line to `.cursor/prompts.jsonl`. Each line is a single JSON object with:

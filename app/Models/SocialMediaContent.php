@@ -2,15 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SocialMediaContent extends Model
 {
-    use HasFactory;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -34,7 +31,7 @@ class SocialMediaContent extends Model
     public function category(): BelongsTo
     {
         // TODO: Review this, it looks like we're missing some database FK's or indexes here.
-        return $this->belongsTo(SocialMediaCategory::class);
+        return $this->belongsTo(SocialMediaCategory::class, 'social_media_category_id');
     }
 
     public function posts(): HasMany

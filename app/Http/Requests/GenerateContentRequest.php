@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Platform;
+use App\Enums\Tone;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class GenerateContentRequest extends FormRequest
 {
@@ -29,13 +32,11 @@ class GenerateContentRequest extends FormRequest
             ],
             'platform' => [
                 'required',
-                'string',
-                'in:twitter,instagram,facebook,linkedin',
+                Rule::enum(Platform::class),
             ],
             'tone' => [
                 'required',
-                'string',
-                'in:professional,casual,humorous,formal',
+                Rule::enum(Tone::class),
             ],
         ];
     }

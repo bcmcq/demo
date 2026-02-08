@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Enums\ContentGenerationStatus;
+use App\Enums\Platform;
+use App\Enums\Tone;
 use App\Http\Middleware\BetterBeWillie;
 use App\Jobs\GenerateContentJob;
 use App\Models\Account;
@@ -80,8 +82,8 @@ class GenerateContentTest extends TestCase
         Queue::assertPushed(GenerateContentJob::class, function (GenerateContentJob $job) {
             return $job->contentGenerationRequest->type === 'generate'
                 && $job->contentGenerationRequest->prompt === 'Write a post about our summer sale'
-                && $job->contentGenerationRequest->platform === 'instagram'
-                && $job->contentGenerationRequest->tone === 'casual';
+                && $job->contentGenerationRequest->platform === Platform::Instagram
+                && $job->contentGenerationRequest->tone === Tone::Casual;
         });
 
         $this->assertDatabaseHas('content_generation_requests', [

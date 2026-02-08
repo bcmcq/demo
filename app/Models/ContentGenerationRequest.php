@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\ContentGenerationStatus;
+use App\Enums\Platform;
+use App\Enums\Tone;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,6 +40,8 @@ class ContentGenerationRequest extends Model
     protected function casts(): array
     {
         return [
+            'platform' => Platform::class,
+            'tone' => Tone::class,
             'status' => ContentGenerationStatus::class,
             'generated_content' => 'array',
         ];

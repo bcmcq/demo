@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Enums\ContentGenerationStatus;
+use App\Enums\Platform;
+use App\Enums\Tone;
 use App\Models\ContentGenerationRequest;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,8 +26,8 @@ class ContentGenerationRequestFactory extends Factory
             'account_id' => 1,
             'type' => fake()->randomElement(['rewrite', 'generate']),
             'prompt' => fake()->sentence(),
-            'platform' => fake()->randomElement(['twitter', 'instagram', 'facebook', 'linkedin']),
-            'tone' => fake()->randomElement(['professional', 'casual', 'humorous', 'formal']),
+            'platform' => fake()->randomElement(Platform::cases()),
+            'tone' => fake()->randomElement(Tone::cases()),
             'status' => ContentGenerationStatus::Pending,
         ];
     }

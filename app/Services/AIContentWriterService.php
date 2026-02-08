@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\Platform;
+use App\Enums\Tone;
 use App\Models\SocialMediaContent;
 use Prism\Prism\Enums\Provider;
 use Prism\Prism\Facades\Prism;
@@ -18,7 +20,7 @@ class AIContentWriterService
      *
      * @return array<int, string>
      */
-    public function rewrite(SocialMediaContent $content, string $platform, string $tone): array
+    public function rewrite(SocialMediaContent $content, Platform $platform, Tone $tone): array
     {
         $response = Prism::structured()
             ->using(Provider::OpenAI, env('OPENAI_MODEL', 'gpt-4o-mini'))
@@ -35,7 +37,7 @@ class AIContentWriterService
      *
      * @return array<int, string>
      */
-    public function generate(string $prompt, string $platform, string $tone): array
+    public function generate(string $prompt, Platform $platform, Tone $tone): array
     {
         $response = Prism::structured()
             ->using(Provider::OpenAI, env('OPENAI_MODEL', 'gpt-4o-mini'))
@@ -77,15 +79,15 @@ class AIContentWriterService
     /**
      * Build a system prompt that instructs the LLM on platform constraints and tone.
      */
-    protected function buildSystemPrompt(string $platform, string $tone): string
+    protected function buildSystemPrompt(Platform $platform, Tone $tone): string
     {
         $platformGuidelines = $this->getPlatformGuidelines($platform);
 
         return <<<PROMPT
         You are a social media content writer. Your job is to create engaging, platform-optimized content.
 
-        Platform: {$platform}
-        Tone: {$tone}
+        Platform: {$platform->value}
+        Tone: {$tone->value}
 
         Platform guidelines:
         {$platformGuidelines}
@@ -102,10 +104,10 @@ class AIContentWriterService
     /**
      * Build the prompt for rewriting existing content.
      */
-    protected function buildRewritePrompt(SocialMediaContent $content, string $platform): string
+    protected function buildRewritePrompt(SocialMediaContent $content, Platform $platform): string
     {
         return <<<PROMPT
-        Rewrite the following social media content for {$platform}.
+        Rewrite the following social media content for {$platform->value}.
 
         Title: {$content->title}
         Original content: {$content->content}
@@ -117,10 +119,10 @@ class AIContentWriterService
     /**
      * Build the prompt for generating new content from a freeform prompt.
      */
-    protected function buildGeneratePrompt(string $prompt, string $platform): string
+    protected function buildGeneratePrompt(string $prompt, Platform $platform): string
     {
         return <<<PROMPT
-        Create social media posts for {$platform} based on the following idea:
+        Create social media posts for {$platform->value} based on the following idea:
 
         {$prompt}
 
@@ -133,14 +135,13 @@ class AIContentWriterService
      *
      * @return string Platform-specific content guidelines
      */
-    protected function getPlatformGuidelines(string $platform): string
+    protected function getPlatformGuidelines(Platform $platform): string
     {
         return match ($platform) {
-            'twitter' => 'Maximum 280 characters. Use concise language. Hashtags are common but keep to 1-3. Mentions with @. Threads are acceptable for longer content.',
-            'instagram' => 'Caption can be up to 2,200 characters. Use 5-15 relevant hashtags at the end. Emojis are encouraged. Line breaks improve readability.',
-            'facebook' => 'No strict character limit but 40-80 characters get the most engagement. Questions and calls-to-action perform well. Minimal hashtags (0-2).',
-            'linkedin' => 'Professional tone expected. Up to 3,000 characters. Use line breaks for readability. 3-5 relevant hashtags. Focus on industry insights and value.',
-            default => 'Write engaging, clear content appropriate for social media.',
+            Platform::Twitter => 'Maximum 280 characters. Use concise language. Hashtags are common but keep to 1-3. Mentions with @. Threads are acceptable for longer content.',
+            Platform::Instagram => 'Caption can be up to 2,200 characters. Use 5-15 relevant hashtags at the end. Emojis are encouraged. Line breaks improve readability.',
+            Platform::Facebook => 'No strict character limit but 40-80 characters get the most engagement. Questions and calls-to-action perform well. Minimal hashtags (0-2).',
+            Platform::LinkedIn => 'Professional tone expected. Up to 3,000 characters. Use line breaks for readability. 3-5 relevant hashtags. Focus on industry insights and value.',
         };
     }
 }

@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Enums\ContentGenerationStatus;
+use App\Enums\Platform;
+use App\Enums\Tone;
 use App\Http\Middleware\BetterBeWillie;
 use App\Jobs\GenerateContentJob;
 use App\Models\Account;
@@ -95,8 +97,8 @@ class RewriteContentTest extends TestCase
 
         Queue::assertPushed(GenerateContentJob::class, function (GenerateContentJob $job) {
             return $job->contentGenerationRequest->type === 'rewrite'
-                && $job->contentGenerationRequest->platform === 'twitter'
-                && $job->contentGenerationRequest->tone === 'casual'
+                && $job->contentGenerationRequest->platform === Platform::Twitter
+                && $job->contentGenerationRequest->tone === Tone::Casual
                 && $job->contentGenerationRequest->social_media_content_id === $this->content->id;
         });
 

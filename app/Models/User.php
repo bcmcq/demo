@@ -18,11 +18,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $fillable = [];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -31,6 +27,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'is_admin',
         'remember_token',
     ];
 
@@ -38,11 +35,21 @@ class User extends Authenticatable
      * The attributes that should be cast.
      *
      * @var array<string, string>
+     *
      * @ai The model wanted to turn this into a function - casts() - rejected, I personally prefer shorthand here unless we have a need for a more complex / conditional cast for some reason.
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_admin' => 'boolean',
     ];
+
+    /**
+     * Determine if the user is an administrator.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->is_admin === true;
+    }
 
     public function account(): BelongsTo
     {

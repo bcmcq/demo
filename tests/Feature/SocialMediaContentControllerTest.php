@@ -414,23 +414,6 @@ class SocialMediaContentControllerTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_show_allowed_for_admin_viewing_another_accounts_content(): void
-    {
-        $this->actingAs($this->adminUser);
-
-        $otherContent = SocialMediaContent::create([
-            'account_id' => $this->otherAccount->id,
-            'social_media_category_id' => $this->category->id,
-            'title' => 'Other Account Content',
-            'content' => 'Admin can see this.',
-        ]);
-
-        $response = $this->getJson('/api/social_media_contents/'.$otherContent->id);
-
-        $response->assertOk()
-            ->assertJsonPath('data.id', $otherContent->id);
-    }
-
     /** -------- STORE -------- */
     public function test_store_creates_content_for_authenticated_account(): void
     {
@@ -574,26 +557,6 @@ class SocialMediaContentControllerTest extends TestCase
         $response->assertForbidden();
 
         $this->assertDatabaseHas('social_media_contents', [
-            'id' => $otherContent->id,
-        ]);
-    }
-
-    public function test_destroy_allowed_for_admin_on_another_accounts_content(): void
-    {
-        $this->actingAs($this->adminUser);
-
-        $otherContent = SocialMediaContent::create([
-            'account_id' => $this->otherAccount->id,
-            'social_media_category_id' => $this->category->id,
-            'title' => 'Admin Deletable',
-            'content' => 'Admin can delete this.',
-        ]);
-
-        $response = $this->deleteJson('/api/social_media_contents/'.$otherContent->id);
-
-        $response->assertOk();
-
-        $this->assertDatabaseMissing('social_media_contents', [
             'id' => $otherContent->id,
         ]);
     }

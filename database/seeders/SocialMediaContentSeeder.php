@@ -387,6 +387,8 @@ class SocialMediaContentSeeder extends Seeder
 
                 $this->scheduleContentForAccount($account, $contents);
             });
+
+        $this->seedAutopostContent(Account::find(1));
     }
 
     /**
@@ -405,6 +407,48 @@ class SocialMediaContentSeeder extends Seeder
 
                 'social_media_category_id' => $categories->where('name', $data['category'])->first()->id,
             ]));
+    }
+
+    /**
+     * Seed 20 content items for the given account that are neither posted nor scheduled,
+     * ensuring they are available for autopost selection.
+     */
+    protected function seedAutopostContent(Account $account): void
+    {
+        $categories = SocialMediaCategory::all();
+        $faker = Factory::create();
+
+        $autopostSeeds = [
+            ['category' => 'holidays', 'title' => 'Top 10 Festive Party Ideas for the Holidays'],
+            ['category' => 'holidays', 'title' => 'How to Host a Stress-Free Holiday Dinner'],
+            ['category' => 'holidays', 'title' => 'Creative Gift Wrapping Ideas for Any Budget'],
+            ['category' => 'holidays', 'title' => 'Best Holiday Markets to Visit This Winter'],
+            ['category' => 'seasons', 'title' => 'Spring Cleaning Tips That Actually Work'],
+            ['category' => 'seasons', 'title' => 'How to Start a Backyard Garden This Summer'],
+            ['category' => 'seasons', 'title' => 'Fall Foliage Road Trips Worth Taking'],
+            ['category' => 'seasons', 'title' => 'Winter Wellness: Staying Healthy When It\'s Cold'],
+            ['category' => 'trivia', 'title' => 'The Shortest War in History Lasted 38 Minutes'],
+            ['category' => 'trivia', 'title' => 'Honey Never Spoils: Archaeologists Found 3000-Year-Old Honey'],
+            ['category' => 'trivia', 'title' => 'Octopuses Have Three Hearts and Blue Blood'],
+            ['category' => 'trivia', 'title' => 'A Group of Flamingos Is Called a Flamboyance'],
+            ['category' => 'facts', 'title' => 'Bananas Are Berries but Strawberries Are Not'],
+            ['category' => 'facts', 'title' => 'Venus Is the Only Planet That Spins Clockwise'],
+            ['category' => 'facts', 'title' => 'A Day on Venus Is Longer Than Its Year'],
+            ['category' => 'jokes', 'title' => 'Why Scientists Don\'t Trust Atoms'],
+            ['category' => 'jokes', 'title' => 'The One About the Talking Dog at the Bar'],
+            ['category' => 'news', 'title' => 'Tech Companies Embrace Remote Work Permanently'],
+            ['category' => 'current_events', 'title' => 'Renewable Energy Surpasses Coal for First Time'],
+            ['category' => 'funny_videos', 'title' => 'Cat vs Cucumber: The Ultimate Compilation'],
+        ];
+
+        foreach ($autopostSeeds as $seed) {
+            SocialMediaContent::create([
+                'account_id' => $account->id,
+                'social_media_category_id' => $categories->where('name', $seed['category'])->first()->id,
+                'title' => $seed['title'],
+                'content' => $faker->paragraphs(rand(1, 3), true),
+            ]);
+        }
     }
 
     /**

@@ -20,7 +20,7 @@ class SocialMediaContentPolicy
      */
     public function view(User $user, SocialMediaContent $socialMediaContent): bool
     {
-        return $user->account_id === $socialMediaContent->account_id || $user->isAdmin();
+        return $user->account_id === $socialMediaContent->account_id;
     }
 
     /**
@@ -36,6 +36,14 @@ class SocialMediaContentPolicy
      */
     public function delete(User $user, SocialMediaContent $socialMediaContent): bool
     {
-        return $user->account_id === $socialMediaContent->account_id || $user->isAdmin();
+        return $user->account_id === $socialMediaContent->account_id;
+    }
+
+    /**
+     * Determine whether the user can use the autopost selection.
+     */
+    public function autopost(User $user): bool
+    {
+        return true;
     }
 }

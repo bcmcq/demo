@@ -20,7 +20,7 @@ class SocialMediaPostPolicy
      */
     public function view(User $user, SocialMediaPost $socialMediaPost): bool
     {
-        return $user->account_id === $socialMediaPost->account_id || $user->isAdmin();
+        return $user->account_id === $socialMediaPost->account_id;
     }
 
     /**
@@ -36,6 +36,6 @@ class SocialMediaPostPolicy
      */
     public function delete(User $user, SocialMediaPost $socialMediaPost): bool
     {
-        return $user->account_id === $socialMediaPost->account_id || $user->isAdmin();
+        return $user->account_id === $socialMediaPost->account_id;
     }
 }

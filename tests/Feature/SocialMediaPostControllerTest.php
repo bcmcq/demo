@@ -244,29 +244,6 @@ class SocialMediaPostControllerTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_show_allowed_for_admin_viewing_another_accounts_post(): void
-    {
-        $this->actingAs($this->adminUser);
-
-        $otherContent = SocialMediaContent::create([
-            'account_id' => $this->otherAccount->id,
-            'social_media_category_id' => $this->category->id,
-            'title' => 'Other Content',
-            'content' => 'Other body.',
-        ]);
-
-        $otherPost = SocialMediaPost::create([
-            'account_id' => $this->otherAccount->id,
-            'social_media_content_id' => $otherContent->id,
-            'posted_at' => now(),
-        ]);
-
-        $response = $this->getJson('/api/social_media_posts/'.$otherPost->id);
-
-        $response->assertOk()
-            ->assertJsonPath('data.id', $otherPost->id);
-    }
-
     /** -------- STORE -------- */
     public function test_store_creates_a_post(): void
     {
@@ -369,29 +346,5 @@ class SocialMediaPostControllerTest extends TestCase
         $response->assertForbidden();
 
         $this->assertDatabaseHas('social_media_posts', ['id' => $otherPost->id]);
-    }
-
-    public function test_destroy_allowed_for_admin_on_another_accounts_post(): void
-    {
-        $this->actingAs($this->adminUser);
-
-        $otherContent = SocialMediaContent::create([
-            'account_id' => $this->otherAccount->id,
-            'social_media_category_id' => $this->category->id,
-            'title' => 'Other Content',
-            'content' => 'Other body.',
-        ]);
-
-        $otherPost = SocialMediaPost::create([
-            'account_id' => $this->otherAccount->id,
-            'social_media_content_id' => $otherContent->id,
-            'posted_at' => now(),
-        ]);
-
-        $response = $this->deleteJson('/api/social_media_posts/'.$otherPost->id);
-
-        $response->assertOk();
-
-        $this->assertDatabaseMissing('social_media_posts', ['id' => $otherPost->id]);
     }
 }

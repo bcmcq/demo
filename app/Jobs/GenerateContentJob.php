@@ -14,9 +14,24 @@ class GenerateContentJob implements ShouldQueue
     use Queueable;
 
     /**
+     * The number of times the job may be attempted.
+     */
+    public int $tries = 3;
+
+    /**
      * Create a new job instance.
      */
     public function __construct(public ContentGenerationRequest $contentGenerationRequest) {}
+
+    /**
+     * Calculate the number of seconds to wait before retrying the job.
+     *
+     * @return array<int, int>
+     */
+    public function backoff(): array
+    {
+        return [5, 30, 120];
+    }
 
     /**
      * Execute the job.

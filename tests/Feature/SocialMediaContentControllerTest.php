@@ -516,6 +516,177 @@ class SocialMediaContentControllerTest extends TestCase
             ->assertJsonValidationErrors(['title']);
     }
 
+    /** -------- UPDATE -------- */
+    public function test_update_modifies_content_belonging_to_account(): void
+    {
+        $content = SocialMediaContent::create([
+            'account_id' => $this->account->id,
+            'social_media_category_id' => $this->category->id,
+            'title' => 'Original Title',
+            'content' => 'Original body text.',
+        ]);
+
+        $payload = [
+            'title' => 'Updated Title',
+            'content' => 'Updated body text.',
+        ];
+
+        $response = $this->putJson('/api/social_media_contents/'.$content->id, $payload);
+
+        $response->assertOk()
+            ->assertJsonPath('data.title', 'Updated Title')
+            ->assertJsonPath('data.content', 'Updated body text.')
+            ->assertJsonPath('data.account_id', $this->account->id)
+            ->assertJsonPath('data.category.id', $this->category->id)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'account_id',
+                    'title',
+                    'content',
+                    'category' => ['id', 'name'],
+                    'is_posted',
+                    'is_scheduled',
+                    'posts_count',
+                    'schedules_count',
+                    'created_at',
+                    'updated_at',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('social_media_contents', [
+            'id' => $content->id,
+            'title' => 'Updated Title',
+            'content' => 'Updated body text.',
+        ]);
+    }
+
+    public function test_update_can_change_category(): void
+    {
+        $content = SocialMediaContent::create([
+            'account_id' => $this->account->id,
+            'social_media_category_id' => $this->category->id,
+            'title' => 'Category Change',
+            'content' => 'Testing category update.',
+        ]);
+
+        $payload = [
+            'social_media_category_id' => $this->secondCategory->id,
+        ];
+
+        $response = $this->putJson('/api/social_media_contents/'.$content->id, $payload);
+
+        $response->assertOk()
+            ->assertJsonPath('data.category.id', $this->secondCategory->id)
+            ->assertJsonPath('data.category.name', 'trivia')
+            ->assertJsonPath('data.title', 'Category Change');
+
+        $this->assertDatabaseHas('social_media_contents', [
+            'id' => $content->id,
+            'social_media_category_id' => $this->secondCategory->id,
+        ]);
+    }
+
+    public function test_update_allows_partial_update(): void
+    {
+        $content = SocialMediaContent::create([
+            'account_id' => $this->account->id,
+            'social_media_category_id' => $this->category->id,
+            'title' => 'Partial Update',
+            'content' => 'Original content stays.',
+        ]);
+
+        $payload = [
+            'title' => 'Only Title Changed',
+        ];
+
+        $response = $this->putJson('/api/social_media_contents/'.$content->id, $payload);
+
+        $response->assertOk()
+            ->assertJsonPath('data.title', 'Only Title Changed')
+            ->assertJsonPath('data.content', 'Original content stays.');
+    }
+
+    public function test_update_returns_404_for_nonexistent_content(): void
+    {
+        $response = $this->putJson('/api/social_media_contents/9999', [
+            'title' => 'Does Not Exist',
+        ]);
+
+        $response->assertNotFound();
+    }
+
+    public function test_update_forbidden_for_content_belonging_to_another_account(): void
+    {
+        $otherContent = SocialMediaContent::create([
+            'account_id' => $this->otherAccount->id,
+            'social_media_category_id' => $this->category->id,
+            'title' => 'Other Account Content',
+            'content' => 'Should not be updatable.',
+        ]);
+
+        $response = $this->putJson('/api/social_media_contents/'.$otherContent->id, [
+            'title' => 'Hacked Title',
+        ]);
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseHas('social_media_contents', [
+            'id' => $otherContent->id,
+            'title' => 'Other Account Content',
+        ]);
+    }
+
+    public function test_update_fails_with_nonexistent_category(): void
+    {
+        $content = SocialMediaContent::create([
+            'account_id' => $this->account->id,
+            'social_media_category_id' => $this->category->id,
+            'title' => 'Bad Category Update',
+            'content' => 'Testing invalid category.',
+        ]);
+
+        $response = $this->putJson('/api/social_media_contents/'.$content->id, [
+            'social_media_category_id' => 9999,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['social_media_category_id']);
+    }
+
+    public function test_update_fails_with_title_exceeding_max_length(): void
+    {
+        $content = SocialMediaContent::create([
+            'account_id' => $this->account->id,
+            'social_media_category_id' => $this->category->id,
+            'title' => 'Max Length Test',
+            'content' => 'Testing title max length.',
+        ]);
+
+        $response = $this->putJson('/api/social_media_contents/'.$content->id, [
+            'title' => str_repeat('a', 256),
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['title']);
+    }
+
+    public function test_update_with_empty_payload_returns_unchanged_content(): void
+    {
+        $content = SocialMediaContent::create([
+            'account_id' => $this->account->id,
+            'social_media_category_id' => $this->category->id,
+            'title' => 'Unchanged',
+            'content' => 'Nothing changes.',
+        ]);
+
+        $response = $this->putJson('/api/social_media_contents/'.$content->id, []);
+
+        $response->assertOk()
+            ->assertJsonPath('data.title', 'Unchanged')
+            ->assertJsonPath('data.content', 'Nothing changes.');
+    }
+
     /** -------- DESTROY -------- */
     public function test_destroy_deletes_content_belonging_to_account(): void
     {

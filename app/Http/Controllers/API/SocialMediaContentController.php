@@ -4,10 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSocialMediaContentRequest;
+use App\Http\Requests\UpdateSocialMediaContentRequest;
 use App\Http\Resources\SocialMediaContentResource;
 use App\Models\SocialMediaContent;
 use App\QueryBuilders\HasRelationFilter;
-use App\Services\AutopostService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -71,6 +71,18 @@ class SocialMediaContentController extends Controller
     }
 
     /**
+     * Update the specified social media content.
+     */
+    public function update(UpdateSocialMediaContentRequest $request, SocialMediaContent $socialMediaContent): SocialMediaContentResource
+    {
+        $socialMediaContent->update($request->validated());
+
+        $socialMediaContent->load(['category', 'posts', 'schedules']);
+
+        return new SocialMediaContentResource($socialMediaContent);
+    }
+
+    /**
      * Remove the specified social media content.
      */
     public function destroy(SocialMediaContent $socialMediaContent): JsonResponse
@@ -80,25 +92,5 @@ class SocialMediaContentController extends Controller
         return response()->json([
             'message' => 'Content deleted successfully.',
         ], 200);
-    }
-
-    /**
-     * Select a random content item using weighted category selection.
-     */
-    public function autopost(Request $request, AutopostService $autopostService): JsonResponse|SocialMediaContentResource
-    {
-        $this->authorize('autopost', SocialMediaContent::class);
-
-        $content = $autopostService->selectContent($request->user()->account_id);
-
-        if ($content === null) {
-            return response()->json([
-                'message' => 'No available content found for autopost.',
-            ], 404);
-        }
-
-        $content->load(['category']);
-
-        return new SocialMediaContentResource($content);
     }
 }

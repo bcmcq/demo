@@ -22,11 +22,13 @@ class StoreSocialMediaPostRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @example 1 */
             'social_media_content_id' => [
                 'required',
                 'integer',
                 'exists:social_media_contents,id',
             ],
+            /** @example "2026-02-09T10:00:00Z" */
             'posted_at' => [
                 'nullable',
                 'date',

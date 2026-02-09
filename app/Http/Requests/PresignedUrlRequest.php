@@ -24,11 +24,13 @@ class PresignedUrlRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @example "promo-video.mp4" */
             'file_name' => [
                 'required',
                 'string',
                 'max:255',
             ],
+            /** @example "video/mp4" */
             'content_type' => [
                 'nullable',
                 'string',

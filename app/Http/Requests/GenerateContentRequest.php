@@ -25,15 +25,18 @@ class GenerateContentRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @example "Write a post about the benefits of remote work for tech companies" */
             'prompt' => [
                 'required',
                 'string',
                 'max:1000',
             ],
+            /** @example "linkedin" */
             'platform' => [
                 'required',
                 Rule::enum(Platform::class),
             ],
+            /** @example "professional" */
             'tone' => [
                 'required',
                 Rule::enum(Tone::class),

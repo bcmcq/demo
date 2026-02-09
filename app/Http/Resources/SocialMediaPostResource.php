@@ -18,9 +18,13 @@ class SocialMediaPostResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            /** @example 1 */
             'id' => $this->id,
+            /** @example 1 */
             'account_id' => $this->account_id,
+            /** @example 5 */
             'social_media_content_id' => $this->social_media_content_id,
+            /** @example "2026-02-09T10:00:00.000000Z" */
             'posted_at' => $this->posted_at,
             'content' => new SocialMediaContentResource($this->whenLoaded('content')),
         ];

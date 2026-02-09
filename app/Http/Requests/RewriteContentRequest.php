@@ -25,10 +25,12 @@ class RewriteContentRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @example "twitter" */
             'platform' => [
                 'required',
                 Rule::enum(Platform::class),
             ],
+            /** @example "professional" */
             'tone' => [
                 'required',
                 Rule::enum(Tone::class),

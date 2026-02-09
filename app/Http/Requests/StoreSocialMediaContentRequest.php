@@ -22,16 +22,19 @@ class StoreSocialMediaContentRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @example 1 */
             'social_media_category_id' => [
                 'required',
                 'integer',
                 'exists:social_media_categories,id',
             ],
+            /** @example "10 Tips for Better Social Media Engagement" */
             'title' => [
                 'required',
                 'string',
                 'max:255',
             ],
+            /** @example "Boost your social media presence with these proven strategies." */
             'content' => [
                 'required',
                 'string',

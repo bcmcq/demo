@@ -8,13 +8,22 @@ use App\Http\Requests\RewriteContentRequest;
 use App\Jobs\GenerateContentJob;
 use App\Models\ContentGenerationRequest;
 use App\Models\SocialMediaContent;
+use Dedoc\Scramble\Attributes\Endpoint;
+use Dedoc\Scramble\Attributes\Group;
+use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\JsonResponse;
 
+#[Group('AI Content Generation', weight: 4)]
 class AIRewriteController extends Controller
 {
     /**
-     * Dispatch an AI rewrite job for the given content item.
+     * Rewrite content with AI.
+     *
+     * Queues an AI job to rewrite existing content for a specific platform and tone.
+     * Returns a generation request ID that can be polled for status.
      */
+    #[Endpoint(operationId: 'rewriteContent')]
+    #[Response(202, description: 'Rewrite job queued.', type: 'array{message: string, generation_request_id: string}')]
     public function __invoke(RewriteContentRequest $request, SocialMediaContent $socialMediaContent): JsonResponse
     {
         $this->authorize('rewrite', $socialMediaContent);

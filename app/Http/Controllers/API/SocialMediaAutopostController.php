@@ -6,14 +6,25 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\SocialMediaContentResource;
 use App\Models\SocialMediaContent;
 use App\Services\AutopostService;
+use Dedoc\Scramble\Attributes\Endpoint;
+use Dedoc\Scramble\Attributes\Group;
+use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+#[Group('Content', weight: 1)]
 class SocialMediaAutopostController extends Controller
 {
     /**
-     * Select a random content item using weighted category selection.
+     * Autopost selection.
+     *
+     * Selects a content item using weighted random category selection.
+     * Returns the selected content or 404 if no eligible content exists.
+     *
+     * @response SocialMediaContentResource
      */
+    #[Endpoint(operationId: 'autopost')]
+    #[Response(404, description: 'No available content found for autopost.', type: 'array{message: string}')]
     public function __invoke(Request $request, AutopostService $autopostService): JsonResponse|SocialMediaContentResource
     {
         $this->authorize('autopost', SocialMediaContent::class);

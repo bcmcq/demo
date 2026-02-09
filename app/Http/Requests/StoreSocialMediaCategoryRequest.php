@@ -22,6 +22,7 @@ class StoreSocialMediaCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @example "Technology" */
             'name' => [
                 'required',
                 'string',

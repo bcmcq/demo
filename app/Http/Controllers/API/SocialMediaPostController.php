@@ -6,12 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSocialMediaPostRequest;
 use App\Http\Resources\SocialMediaPostResource;
 use App\Models\SocialMediaPost;
+use Dedoc\Scramble\Attributes\Endpoint;
+use Dedoc\Scramble\Attributes\Group;
+use Dedoc\Scramble\Attributes\QueryParameter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
+#[Group('Posts', weight: 2)]
 class SocialMediaPostController extends Controller
 {
     public function __construct()
@@ -20,8 +24,14 @@ class SocialMediaPostController extends Controller
     }
 
     /**
-     * Display a paginated listing of posts for the authenticated user's account.
+     * List all posts.
+     *
+     * Returns a paginated list of posts for the authenticated user's account.
      */
+    #[QueryParameter('filter[content]', description: 'Filter by content ID.', type: 'int', example: 1)]
+    #[QueryParameter('include', description: 'Comma-separated relationships to include: content.', type: 'string', example: 'content')]
+    #[QueryParameter('sort', description: 'Sort by field. Prefix with - for descending. Allowed: posted_at.', type: 'string', example: '-posted_at')]
+    #[QueryParameter('per_page', description: 'Number of items per page.', type: 'int', default: 15, example: 25)]
     public function index(Request $request): AnonymousResourceCollection
     {
         $query = QueryBuilder::for(
@@ -39,7 +49,9 @@ class SocialMediaPostController extends Controller
     }
 
     /**
-     * Display the specified post.
+     * Get a post.
+     *
+     * Returns a single post by ID with its associated content.
      */
     public function show(SocialMediaPost $socialMediaPost): SocialMediaPostResource
     {
@@ -49,7 +61,9 @@ class SocialMediaPostController extends Controller
     }
 
     /**
-     * Store a newly created post for the authenticated user's account.
+     * Create a post.
+     *
+     * Records a new post for the authenticated user's account.
      */
     public function store(StoreSocialMediaPostRequest $request): JsonResponse
     {
@@ -67,8 +81,11 @@ class SocialMediaPostController extends Controller
     }
 
     /**
-     * Remove the specified post.
+     * Delete a post.
+     *
+     * Permanently removes a post record. Only the owner or an admin may delete.
      */
+    #[Endpoint(operationId: 'deletePost')]
     public function destroy(SocialMediaPost $socialMediaPost): JsonResponse
     {
         $socialMediaPost->delete();

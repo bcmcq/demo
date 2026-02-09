@@ -22,16 +22,19 @@ class UpdateSocialMediaContentRequest extends FormRequest
     public function rules(): array
     {
         return [
+            /** @example 2 */
             'social_media_category_id' => [
                 'sometimes',
                 'integer',
                 'exists:social_media_categories,id',
             ],
+            /** @example "Updated: Social Media Best Practices" */
             'title' => [
                 'sometimes',
                 'string',
                 'max:255',
             ],
+            /** @example "Updated content with the latest social media trends and insights." */
             'content' => [
                 'sometimes',
                 'string',

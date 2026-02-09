@@ -12,16 +12,22 @@ use App\Jobs\UploadToMuxJob;
 use App\Models\Media;
 use App\Models\SocialMediaContent;
 use App\Services\MuxService;
+use Dedoc\Scramble\Attributes\Endpoint;
+use Dedoc\Scramble\Attributes\Group;
+use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[Group('Media', weight: 3)]
 class MediaController extends Controller
 {
     /**
-     * Display a listing of media for the given content.
+     * List media for content.
+     *
+     * Returns all media attachments for the specified content item.
      */
     public function index(SocialMediaContent $socialMediaContent): AnonymousResourceCollection
     {
@@ -33,8 +39,13 @@ class MediaController extends Controller
     }
 
     /**
-     * Generate a presigned PUT URL for direct video upload to S3.
+     * Generate presigned upload URL.
+     *
+     * Returns a presigned PUT URL for direct video upload to S3/MinIO storage.
+     * The client should use the returned URL and headers to upload the file directly.
      */
+    #[Endpoint(operationId: 'getPresignedUrl')]
+    #[Response(200, description: 'Presigned upload URL generated.', type: 'array{url: string, headers: array, key: string, expires_at: string}')]
     public function presignedUrl(PresignedUrlRequest $request, SocialMediaContent $socialMediaContent): JsonResponse
     {
         $this->authorize('create', [Media::class, $socialMediaContent]);
@@ -60,7 +71,9 @@ class MediaController extends Controller
     }
 
     /**
-     * Display the specified media.
+     * Get media.
+     *
+     * Returns a single media attachment by ID.
      */
     public function show(SocialMediaContent $socialMediaContent, Media $media): MediaResource
     {
@@ -70,10 +83,14 @@ class MediaController extends Controller
     }
 
     /**
-     * Store a new media file for the given content.
+     * Attach media to content.
      *
-     * Accepts either an image file upload or a storage key for a video already uploaded to S3.
+     * Upload an image file directly or provide a storage key for a video already uploaded via presigned URL.
+     * Images are limited to 2MB. Videos must be uploaded to S3 first using the presigned URL endpoint.
+     *
+     * @requestMediaType multipart/form-data
      */
+    #[Endpoint(operationId: 'storeMedia')]
     public function store(StoreMediaRequest $request, SocialMediaContent $socialMediaContent): JsonResponse
     {
         $this->authorize('create', [Media::class, $socialMediaContent]);
@@ -143,8 +160,11 @@ class MediaController extends Controller
     }
 
     /**
-     * Remove the specified media from storage.
+     * Delete media.
+     *
+     * Removes media from storage (S3 + Mux if video) and deletes the record.
      */
+    #[Endpoint(operationId: 'deleteMedia')]
     public function destroy(Request $request, SocialMediaContent $socialMediaContent, Media $media, MuxService $muxService): JsonResponse
     {
         $this->authorize('delete', [Media::class, $socialMediaContent, $media]);

@@ -30,11 +30,13 @@ class StoreMediaRequest extends FormRequest
                 'mimetypes:'.implode(',', MimeType::imageValues()),
                 File::types(['jpeg', 'jpg', 'png', 'gif', 'webp'])->max(2 * 1024),
             ],
+            /** @example "videos/abc123_promo.mp4" */
             'storage_key' => [
                 'required_without:file',
                 'string',
                 'max:500',
             ],
+            /** @example "promo.mp4" */
             'file_name' => [
                 'required_with:storage_key',
                 'string',

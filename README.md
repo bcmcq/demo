@@ -30,7 +30,7 @@ Integrated [prism](https://prismphp.com/) and ~~OpenAI~~ OpenRouter (swapped bec
 
 ### Media Uploads
 
-As outline [here](_ADVANCED_TASKS.md#3-media-uploads), I added the ability to upload media and associate it with content. It will accept images and videos. I added `minio` as a new docker service to simulate S3, it should spin up automatically with the project and be ready to go. There's also a video to test uploading with in `storage/test/`.
+As outline [here](_ADVANCED_TASKS.md#3-media-uploads), I added the ability to upload media and associate it with content. It will accept images and videos. I added `minio` as a new docker service to simulate S3, it should spin up automatically with the project and be ready to go. There's also a video to test uploading with in [storage/test/](./storage/test/).
 
 Image's are uploaded directly to the server. Video uploads require that you fetch a presigned url, upload your video to that and then hit the store media route. I did both approaches just to show different methods of tackling the problem.
 

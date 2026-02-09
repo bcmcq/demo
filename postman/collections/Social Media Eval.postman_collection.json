@@ -1,0 +1,735 @@
+{
+  "info": {
+    "_postman_id": "74a62747-986f-4d0d-bf14-6cdc8f5bbc7f",
+    "name": "Social Media Eval",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "social_media_categories",
+      "item": [
+        {
+          "name": "list",
+          "id": "9670c832-d236-4c4b-ba0a-d8a6e02a84b8",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{domain}}/social_media_categories",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_categories"
+              ],
+              "query": [
+                {
+                  "key": "filter[name]",
+                  "value": "example",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "name",
+                  "disabled": true
+                },
+                {
+                  "key": "per_page",
+                  "value": "15",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "show",
+          "id": "a1b2c3d4-show-cat-0001-000000000001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{domain}}/social_media_categories/1",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_categories",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "store",
+          "id": "3265584f-6ebd-4e51-bcf7-ce4c8e74c526",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Example Category\"\n}"
+            },
+            "url": {
+              "raw": "{{domain}}/social_media_categories",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "destroy",
+          "id": "bdd714a6-9f9f-4ecb-98f7-d88079c5ab5c",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{domain}}/social_media_categories/1",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_categories",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "c837423a-fd8c-4476-b202-2401781e2c5e"
+    },
+    {
+      "name": "social_media_contents",
+      "item": [
+        {
+          "name": "autopost",
+          "id": "f1a2b3c4-auto-cnt-0001-000000000001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{domain}}/social_media_contents/autopost",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "autopost"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "list",
+          "id": "0ce1c137-9fc5-4678-82a2-f5ba62d3c1a4",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{domain}}/social_media_contents?include=category,posts,schedules,media",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents"
+              ],
+              "query": [
+                {
+                  "key": "filter[posts]",
+                  "value": "true",
+                  "uuid": "ac6ed929-64c8-45fd-98ef-14429971cc4f",
+                  "disabled": true
+                },
+                {
+                  "key": "filter[category]",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "filter[schedules]",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "include",
+                  "value": "category,posts,schedules,media",
+                  "uuid": "1678823f-1f07-468e-bab2-0f94b6df211b"
+                },
+                {
+                  "key": "sort",
+                  "value": "updated_at",
+                  "uuid": "f4e19b63-3a63-494b-9eb0-b6afed113036",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "per_page",
+                  "value": "10",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "show",
+          "id": "a1b2c3d4-show-cnt-0001-000000000002",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{domain}}/social_media_contents/1",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "store",
+          "id": "c9042870-7b63-41fb-8c86-c550a650476a",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"social_media_category_id\": 1,\n    \"title\": \"Example Content\",\n    \"content\": \"This is example social media content.\"\n}"
+            },
+            "url": {
+              "raw": "{{domain}}/social_media_contents",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "id": "b2c3d4e5-updt-cnt-0001-000000000001",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Updated Content Title\",\n    \"content\": \"This is updated social media content.\",\n    \"social_media_category_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{domain}}/social_media_contents/1",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "destroy",
+          "id": "01846eaf-ad3c-4035-a776-b8b234088879",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{domain}}/social_media_contents/111",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "111"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "b5fa049c-d85f-4cb2-bf7d-a0b7a720c9a6"
+    },
+    {
+      "name": "ai_content_writer",
+      "item": [
+        {
+          "name": "rewrite",
+          "id": "ai-rewrite-0001-000000000001",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"platform\": \"twitter\",\n    \"tone\": \"casual\"\n}"
+            },
+            "url": {
+              "raw": "{{domain}}/social_media_contents/1/rewrite",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "1",
+                "rewrite"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "generate",
+          "id": "ai-generate-0001-000000000002",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"prompt\": \"Write a fun post about our summer sale with emoji\",\n    \"platform\": \"instagram\",\n    \"tone\": \"casual\"\n}"
+            },
+            "url": {
+              "raw": "{{domain}}/social_media_contents/generate",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "generate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "status",
+          "id": "ai-status-0001-000000000003",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{domain}}/social_media_contents/generate/019c3f10-02f5-70bb-a837-86fbe38198a8",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "generate",
+                "019c3f10-02f5-70bb-a837-86fbe38198a8"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "ai-content-writer-folder-0001"
+    },
+    {
+      "name": "media",
+      "item": [
+        {
+          "name": "presigned url",
+          "id": "media-presigned-url-0001",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"file_name\": \"surf.mp4\",\n    \"content_type\": \"video/mp4\"\n}"
+            },
+            "url": {
+              "raw": "{{domain}}/social_media_contents/1/media/presigned_url",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "1",
+                "media",
+                "presigned_url"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "store media (image)",
+          "id": "media-store-image-0001",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [
+                    ""
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{domain}}/social_media_contents/1/media",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "1",
+                "media"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "store media (video)",
+          "id": "media-store-video-0001",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"storage_key\": \"videos/634fae9d-d777-4c23-af24-ab1dbb106eab_surf.mp4\",\n    \"file_name\": \"surf.mp4\"\n}"
+            },
+            "url": {
+              "raw": "{{domain}}/social_media_contents/1/media",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "1",
+                "media"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "list media",
+          "id": "media-list-0001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{domain}}/social_media_contents/1/media",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "1",
+                "media"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "show media",
+          "id": "media-show-0001",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{domain}}/social_media_contents/1/media/1",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "1",
+                "media",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete media",
+          "id": "media-delete-0001",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{domain}}/social_media_contents/1/media/1",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_contents",
+                "1",
+                "media",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "media-folder-0001"
+    },
+    {
+      "name": "social_media_posts",
+      "item": [
+        {
+          "name": "list",
+          "id": "25a41cf7-f805-4b2d-bc27-f9e9d9ec4aee",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{domain}}/social_media_posts",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_posts"
+              ],
+              "query": [
+                {
+                  "key": "filter[content]",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "include",
+                  "value": "content",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "-posted_at",
+                  "disabled": true
+                },
+                {
+                  "key": "per_page",
+                  "value": "15",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "show",
+          "id": "a1b2c3d4-show-pst-0001-000000000003",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{domain}}/social_media_posts/1",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_posts",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "store",
+          "id": "e021c832-fcb0-447b-85ce-50e0929aeb23",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"social_media_content_id\": 1,\n    \"posted_at\": \"2026-02-08 12:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{domain}}/social_media_posts",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_posts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "destroy",
+          "id": "763a46ac-0d46-49fc-ba4a-bef5d9b3d5de",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{domain}}/social_media_posts/1",
+              "host": [
+                "{{domain}}"
+              ],
+              "path": [
+                "social_media_posts",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "5b2c1981-6016-4671-9496-47841cf7d5ca"
+    }
+  ]
+}

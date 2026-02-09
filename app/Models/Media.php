@@ -32,15 +32,14 @@ class Media extends Model
     ];
 
     /**
+     * The attributes that should be cast.
+     *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'type' => MediaType::class,
-            'size' => 'integer',
-        ];
-    }
+    protected $casts = [
+        'type' => MediaType::class,
+        'size' => 'integer',
+    ];
 
     public function socialMediaContent(): BelongsTo
     {

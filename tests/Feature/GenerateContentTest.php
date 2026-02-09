@@ -5,28 +5,19 @@ namespace Tests\Feature;
 use App\Enums\ContentGenerationStatus;
 use App\Enums\Platform;
 use App\Enums\Tone;
-use App\Http\Middleware\BetterBeWillie;
 use App\Jobs\GenerateContentJob;
 use App\Models\Account;
 use App\Models\ContentGenerationRequest;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Prism\Prism\Enums\FinishReason;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\Testing\StructuredResponseFake;
 use Prism\Prism\ValueObjects\Usage;
-use Tests\TestCase;
 
-class GenerateContentTest extends TestCase
+class GenerateContentTest extends BaseTestCase
 {
-    use RefreshDatabase;
-
-    private Account $account;
-
     private Account $otherAccount;
-
-    private User $user;
 
     private User $otherUser;
 
@@ -34,35 +25,8 @@ class GenerateContentTest extends TestCase
     {
         parent::setUp();
 
-        $this->withoutMiddleware(BetterBeWillie::class);
-
-        $this->account = Account::create([
-            'name' => 'Test Account',
-            'website' => 'https://test.com',
-        ]);
-
-        $this->otherAccount = Account::create([
-            'name' => 'Other Account',
-            'website' => 'https://other.com',
-        ]);
-
-        $this->user = User::forceCreate([
-            'name' => 'Willie Dustice',
-            'email' => 'willie@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->account->id,
-            'is_admin' => false,
-        ]);
-
-        $this->otherUser = User::forceCreate([
-            'name' => 'Other User',
-            'email' => 'other@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->otherAccount->id,
-            'is_admin' => false,
-        ]);
-
-        $this->actingAs($this->user);
+        $this->otherAccount = $this->createOtherAccount();
+        $this->otherUser = $this->createUserForAccount($this->otherAccount);
     }
 
     /** -------- GENERATE: HAPPY PATH -------- */

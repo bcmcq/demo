@@ -2,26 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Http\Middleware\BetterBeWillie;
-use App\Models\Account;
 use App\Models\SocialMediaAccountCategoryWeight;
 use App\Models\SocialMediaCategory;
 use App\Models\SocialMediaContent;
 use App\Models\SocialMediaPost;
 use App\Models\SocialMediaSchedule;
-use App\Models\User;
 use App\Services\AutopostService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class AutopostTest extends TestCase
+class AutopostTest extends BaseTestCase
 {
-    use RefreshDatabase;
-
-    private Account $account;
-
-    private User $user;
-
     private SocialMediaCategory $holidays;
 
     private SocialMediaCategory $trivia;
@@ -32,37 +21,20 @@ class AutopostTest extends TestCase
     {
         parent::setUp();
 
-        $this->withoutMiddleware(BetterBeWillie::class);
-
-        $this->account = Account::create([
-            'name' => 'Test Account',
-            'website' => 'https://test.com',
-        ]);
-
-        $this->user = User::forceCreate([
-            'name' => 'Willie Dustice',
-            'email' => 'willie@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->account->id,
-            'is_admin' => false,
-        ]);
-
-        $this->actingAs($this->user);
-
-        $this->holidays = SocialMediaCategory::create(['name' => 'holidays']);
-        $this->trivia = SocialMediaCategory::create(['name' => 'trivia']);
-        $this->news = SocialMediaCategory::create(['name' => 'news']);
+        $this->holidays = SocialMediaCategory::factory()->create(['name' => 'holidays']);
+        $this->trivia = SocialMediaCategory::factory()->create(['name' => 'trivia']);
+        $this->news = SocialMediaCategory::factory()->create(['name' => 'news']);
     }
 
     public function test_autopost_returns_content_from_weighted_category(): void
     {
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'weight' => 10,
         ]);
 
-        $content = SocialMediaContent::create([
+        $content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'title' => 'Holiday Post',
@@ -89,26 +61,25 @@ class AutopostTest extends TestCase
 
     public function test_autopost_excludes_posted_content(): void
     {
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'weight' => 10,
         ]);
 
-        $postedContent = SocialMediaContent::create([
+        $postedContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'title' => 'Already Posted',
             'content' => 'This was posted.',
         ]);
 
-        SocialMediaPost::create([
+        SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $postedContent->id,
-            'posted_at' => now(),
         ]);
 
-        $availableContent = SocialMediaContent::create([
+        $availableContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'title' => 'Not Yet Posted',
@@ -124,26 +95,25 @@ class AutopostTest extends TestCase
 
     public function test_autopost_excludes_scheduled_content(): void
     {
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'weight' => 10,
         ]);
 
-        $scheduledContent = SocialMediaContent::create([
+        $scheduledContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'title' => 'Already Scheduled',
             'content' => 'This is scheduled.',
         ]);
 
-        SocialMediaSchedule::create([
+        SocialMediaSchedule::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $scheduledContent->id,
-            'scheduled_at' => now()->addDay(),
         ]);
 
-        $availableContent = SocialMediaContent::create([
+        $availableContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'title' => 'Not Scheduled',
@@ -159,32 +129,31 @@ class AutopostTest extends TestCase
 
     public function test_autopost_falls_back_when_primary_category_exhausted(): void
     {
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'weight' => 100,
         ]);
 
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->trivia->id,
             'weight' => 1,
         ]);
 
-        $postedHoliday = SocialMediaContent::create([
+        $postedHoliday = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'title' => 'Posted Holiday',
             'content' => 'Already posted.',
         ]);
 
-        SocialMediaPost::create([
+        SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $postedHoliday->id,
-            'posted_at' => now(),
         ]);
 
-        $triviaContent = SocialMediaContent::create([
+        $triviaContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->trivia->id,
             'title' => 'Trivia Fallback',
@@ -200,7 +169,7 @@ class AutopostTest extends TestCase
 
     public function test_autopost_returns_404_when_no_weights_configured(): void
     {
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'title' => 'Orphan Content',
@@ -215,23 +184,22 @@ class AutopostTest extends TestCase
 
     public function test_autopost_returns_404_when_all_content_exhausted(): void
     {
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'weight' => 10,
         ]);
 
-        $content = SocialMediaContent::create([
+        $content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'title' => 'All Posted',
             'content' => 'Already posted.',
         ]);
 
-        SocialMediaPost::create([
+        SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $content->id,
-            'posted_at' => now(),
         ]);
 
         $response = $this->getJson('/api/social_media_contents/autopost');
@@ -242,26 +210,26 @@ class AutopostTest extends TestCase
 
     public function test_autopost_ignores_zero_weight_categories(): void
     {
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'weight' => 0,
         ]);
 
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->trivia->id,
             'weight' => 5,
         ]);
 
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'title' => 'Zero Weight Holiday',
             'content' => 'Should not be selected.',
         ]);
 
-        $triviaContent = SocialMediaContent::create([
+        $triviaContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->trivia->id,
             'title' => 'Trivia Content',
@@ -276,25 +244,22 @@ class AutopostTest extends TestCase
 
     public function test_autopost_scopes_to_authenticated_users_account(): void
     {
-        $otherAccount = Account::create([
-            'name' => 'Other Account',
-            'website' => 'https://other.com',
-        ]);
+        $otherAccount = $this->createOtherAccount();
 
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'weight' => 10,
         ]);
 
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $otherAccount->id,
             'social_media_category_id' => $this->holidays->id,
             'title' => 'Other Account Content',
             'content' => 'Not mine.',
         ]);
 
-        $myContent = SocialMediaContent::create([
+        $myContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'title' => 'My Content',
@@ -310,39 +275,39 @@ class AutopostTest extends TestCase
 
     public function test_autopost_with_multiple_weighted_categories_returns_valid_content(): void
     {
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'weight' => 5,
         ]);
 
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->trivia->id,
             'weight' => 3,
         ]);
 
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->news->id,
             'weight' => 2,
         ]);
 
-        $holidayContent = SocialMediaContent::create([
+        $holidayContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'title' => 'Holiday Post',
             'content' => 'Holidays!',
         ]);
 
-        $triviaContent = SocialMediaContent::create([
+        $triviaContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->trivia->id,
             'title' => 'Trivia Post',
             'content' => 'Fun facts!',
         ]);
 
-        $newsContent = SocialMediaContent::create([
+        $newsContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->news->id,
             'title' => 'News Post',
@@ -359,7 +324,7 @@ class AutopostTest extends TestCase
 
     public function test_autopost_returns_404_when_no_content_exists_for_weighted_categories(): void
     {
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'weight' => 10,
@@ -379,38 +344,38 @@ class AutopostTest extends TestCase
      */
     private function createWeightedCategoriesWithContent(): array
     {
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->holidays->id,
             'weight' => 5,
         ]);
 
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->trivia->id,
             'weight' => 3,
         ]);
 
-        SocialMediaAccountCategoryWeight::create([
+        SocialMediaAccountCategoryWeight::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->news->id,
             'weight' => 2,
         ]);
 
         return [
-            'holidays' => SocialMediaContent::create([
+            'holidays' => SocialMediaContent::factory()->create([
                 'account_id' => $this->account->id,
                 'social_media_category_id' => $this->holidays->id,
                 'title' => 'Holiday Post',
                 'content' => 'Holidays!',
             ]),
-            'trivia' => SocialMediaContent::create([
+            'trivia' => SocialMediaContent::factory()->create([
                 'account_id' => $this->account->id,
                 'social_media_category_id' => $this->trivia->id,
                 'title' => 'Trivia Post',
                 'content' => 'Fun facts!',
             ]),
-            'news' => SocialMediaContent::create([
+            'news' => SocialMediaContent::factory()->create([
                 'account_id' => $this->account->id,
                 'social_media_category_id' => $this->news->id,
                 'title' => 'News Post',

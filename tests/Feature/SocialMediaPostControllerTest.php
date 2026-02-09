@@ -2,24 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Http\Middleware\BetterBeWillie;
 use App\Models\Account;
 use App\Models\SocialMediaCategory;
 use App\Models\SocialMediaContent;
 use App\Models\SocialMediaPost;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class SocialMediaPostControllerTest extends TestCase
+class SocialMediaPostControllerTest extends BaseTestCase
 {
-    use RefreshDatabase;
-
-    private Account $account;
-
     private Account $otherAccount;
-
-    private User $user;
 
     private User $adminUser;
 
@@ -33,47 +24,13 @@ class SocialMediaPostControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->withoutMiddleware(BetterBeWillie::class);
+        $this->otherAccount = $this->createOtherAccount();
+        $this->adminUser = $this->createAdminUser();
+        $this->otherUser = $this->createUserForAccount($this->otherAccount);
 
-        $this->account = Account::create([
-            'name' => 'Test Account',
-            'website' => 'https://test.com',
-        ]);
+        $this->category = SocialMediaCategory::factory()->create(['name' => 'holidays']);
 
-        $this->otherAccount = Account::create([
-            'name' => 'Other Account',
-            'website' => 'https://other.com',
-        ]);
-
-        $this->user = User::forceCreate([
-            'name' => 'Willie Dustice',
-            'email' => 'willie@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->account->id,
-            'is_admin' => false,
-        ]);
-
-        $this->adminUser = User::forceCreate([
-            'name' => 'Admin User',
-            'email' => 'admin@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->account->id,
-            'is_admin' => true,
-        ]);
-
-        $this->otherUser = User::forceCreate([
-            'name' => 'Other User',
-            'email' => 'other@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->otherAccount->id,
-            'is_admin' => false,
-        ]);
-
-        $this->actingAs($this->user);
-
-        $this->category = SocialMediaCategory::create(['name' => 'holidays']);
-
-        $this->content = SocialMediaContent::create([
+        $this->content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Test Content',
@@ -84,23 +41,21 @@ class SocialMediaPostControllerTest extends TestCase
     /** -------- INDEX -------- */
     public function test_index_returns_paginated_posts_for_account(): void
     {
-        SocialMediaPost::create([
+        SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $this->content->id,
-            'posted_at' => now(),
         ]);
 
-        $otherContent = SocialMediaContent::create([
+        $otherContent = SocialMediaContent::factory()->create([
             'account_id' => $this->otherAccount->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Other Content',
             'content' => 'Other body.',
         ]);
 
-        SocialMediaPost::create([
+        SocialMediaPost::factory()->create([
             'account_id' => $this->otherAccount->id,
             'social_media_content_id' => $otherContent->id,
-            'posted_at' => now(),
         ]);
 
         $response = $this->getJson('/api/social_media_posts');
@@ -126,23 +81,21 @@ class SocialMediaPostControllerTest extends TestCase
 
     public function test_index_filters_by_content_id(): void
     {
-        $secondContent = SocialMediaContent::create([
+        $secondContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Second Content',
             'content' => 'Second body.',
         ]);
 
-        SocialMediaPost::create([
+        SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $this->content->id,
-            'posted_at' => now(),
         ]);
 
-        SocialMediaPost::create([
+        SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $secondContent->id,
-            'posted_at' => now(),
         ]);
 
         $response = $this->getJson('/api/social_media_posts?filter[content]='.$this->content->id);
@@ -154,13 +107,13 @@ class SocialMediaPostControllerTest extends TestCase
 
     public function test_index_sorts_by_posted_at_descending_by_default(): void
     {
-        $olderPost = SocialMediaPost::create([
+        $olderPost = SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $this->content->id,
             'posted_at' => now()->subDays(2),
         ]);
 
-        $newerPost = SocialMediaPost::create([
+        $newerPost = SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $this->content->id,
             'posted_at' => now(),
@@ -176,7 +129,7 @@ class SocialMediaPostControllerTest extends TestCase
     public function test_index_respects_per_page_parameter(): void
     {
         for ($i = 0; $i < 5; $i++) {
-            SocialMediaPost::create([
+            SocialMediaPost::factory()->create([
                 'account_id' => $this->account->id,
                 'social_media_content_id' => $this->content->id,
                 'posted_at' => now()->subDays($i),
@@ -194,7 +147,7 @@ class SocialMediaPostControllerTest extends TestCase
     /** -------- SHOW -------- */
     public function test_show_returns_a_single_post_for_account(): void
     {
-        $post = SocialMediaPost::create([
+        $post = SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $this->content->id,
             'posted_at' => '2026-02-07 12:00:00',
@@ -226,17 +179,16 @@ class SocialMediaPostControllerTest extends TestCase
 
     public function test_show_forbidden_for_post_belonging_to_another_account(): void
     {
-        $otherContent = SocialMediaContent::create([
+        $otherContent = SocialMediaContent::factory()->create([
             'account_id' => $this->otherAccount->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Other Content',
             'content' => 'Other body.',
         ]);
 
-        $otherPost = SocialMediaPost::create([
+        $otherPost = SocialMediaPost::factory()->create([
             'account_id' => $this->otherAccount->id,
             'social_media_content_id' => $otherContent->id,
-            'posted_at' => now(),
         ]);
 
         $response = $this->getJson('/api/social_media_posts/'.$otherPost->id);
@@ -305,10 +257,9 @@ class SocialMediaPostControllerTest extends TestCase
     /** -------- DESTROY -------- */
     public function test_destroy_deletes_post_belonging_to_account(): void
     {
-        $post = SocialMediaPost::create([
+        $post = SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $this->content->id,
-            'posted_at' => now(),
         ]);
 
         $response = $this->deleteJson('/api/social_media_posts/'.$post->id);
@@ -328,17 +279,16 @@ class SocialMediaPostControllerTest extends TestCase
 
     public function test_destroy_forbidden_for_post_belonging_to_another_account(): void
     {
-        $otherContent = SocialMediaContent::create([
+        $otherContent = SocialMediaContent::factory()->create([
             'account_id' => $this->otherAccount->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Other Content',
             'content' => 'Other body.',
         ]);
 
-        $otherPost = SocialMediaPost::create([
+        $otherPost = SocialMediaPost::factory()->create([
             'account_id' => $this->otherAccount->id,
             'social_media_content_id' => $otherContent->id,
-            'posted_at' => now(),
         ]);
 
         $response = $this->deleteJson('/api/social_media_posts/'.$otherPost->id);

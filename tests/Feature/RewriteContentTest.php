@@ -5,30 +5,21 @@ namespace Tests\Feature;
 use App\Enums\ContentGenerationStatus;
 use App\Enums\Platform;
 use App\Enums\Tone;
-use App\Http\Middleware\BetterBeWillie;
 use App\Jobs\GenerateContentJob;
 use App\Models\Account;
 use App\Models\ContentGenerationRequest;
 use App\Models\SocialMediaCategory;
 use App\Models\SocialMediaContent;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Prism\Prism\Enums\FinishReason;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\Testing\StructuredResponseFake;
 use Prism\Prism\ValueObjects\Usage;
-use Tests\TestCase;
 
-class RewriteContentTest extends TestCase
+class RewriteContentTest extends BaseTestCase
 {
-    use RefreshDatabase;
-
-    private Account $account;
-
     private Account $otherAccount;
-
-    private User $user;
 
     private User $otherUser;
 
@@ -40,41 +31,12 @@ class RewriteContentTest extends TestCase
     {
         parent::setUp();
 
-        $this->withoutMiddleware(BetterBeWillie::class);
+        $this->otherAccount = $this->createOtherAccount();
+        $this->otherUser = $this->createUserForAccount($this->otherAccount);
 
-        $this->account = Account::create([
-            'name' => 'Test Account',
-            'website' => 'https://test.com',
-        ]);
+        $this->category = SocialMediaCategory::factory()->create(['name' => 'holidays']);
 
-        $this->otherAccount = Account::create([
-            'name' => 'Other Account',
-            'website' => 'https://other.com',
-        ]);
-
-        $this->user = User::forceCreate([
-            'name' => 'Willie Dustice',
-            'email' => 'willie@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->account->id,
-            'is_admin' => false,
-        ]);
-
-        $this->otherUser = User::forceCreate([
-            'name' => 'Other User',
-            'email' => 'other@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->otherAccount->id,
-            'is_admin' => false,
-        ]);
-
-        $this->actingAs($this->user);
-
-        $this->category = SocialMediaCategory::create([
-            'name' => 'holidays',
-        ]);
-
-        $this->content = SocialMediaContent::create([
+        $this->content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Happy Holidays',
@@ -226,7 +188,7 @@ class RewriteContentTest extends TestCase
     /** -------- AUTHORIZATION -------- */
     public function test_rewrite_forbidden_for_other_accounts_content(): void
     {
-        $otherContent = SocialMediaContent::create([
+        $otherContent = SocialMediaContent::factory()->create([
             'account_id' => $this->otherAccount->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Other Content',

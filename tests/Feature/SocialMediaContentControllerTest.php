@@ -2,25 +2,16 @@
 
 namespace Tests\Feature;
 
-use App\Http\Middleware\BetterBeWillie;
 use App\Models\Account;
 use App\Models\SocialMediaCategory;
 use App\Models\SocialMediaContent;
 use App\Models\SocialMediaPost;
 use App\Models\SocialMediaSchedule;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class SocialMediaContentControllerTest extends TestCase
+class SocialMediaContentControllerTest extends BaseTestCase
 {
-    use RefreshDatabase;
-
-    private Account $account;
-
     private Account $otherAccount;
-
-    private User $user;
 
     private User $adminUser;
 
@@ -34,64 +25,25 @@ class SocialMediaContentControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->withoutMiddleware(BetterBeWillie::class);
+        $this->otherAccount = $this->createOtherAccount();
+        $this->adminUser = $this->createAdminUser();
+        $this->otherUser = $this->createUserForAccount($this->otherAccount);
 
-        $this->account = Account::create([
-            'name' => 'Test Account',
-            'website' => 'https://test.com',
-        ]);
-
-        $this->otherAccount = Account::create([
-            'name' => 'Other Account',
-            'website' => 'https://other.com',
-        ]);
-
-        $this->user = User::forceCreate([
-            'name' => 'Willie Dustice',
-            'email' => 'willie@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->account->id,
-            'is_admin' => false,
-        ]);
-
-        $this->adminUser = User::forceCreate([
-            'name' => 'Admin User',
-            'email' => 'admin@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->account->id,
-            'is_admin' => true,
-        ]);
-
-        $this->otherUser = User::forceCreate([
-            'name' => 'Other User',
-            'email' => 'other@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->otherAccount->id,
-            'is_admin' => false,
-        ]);
-
-        $this->actingAs($this->user);
-
-        $this->category = SocialMediaCategory::create([
-            'name' => 'holidays',
-        ]);
-
-        $this->secondCategory = SocialMediaCategory::create([
-            'name' => 'trivia',
-        ]);
+        $this->category = SocialMediaCategory::factory()->create(['name' => 'holidays']);
+        $this->secondCategory = SocialMediaCategory::factory()->create(['name' => 'trivia']);
     }
 
     /** -------- INDEX -------- */
     public function test_index_returns_paginated_content_for_account(): void
     {
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Test Content',
             'content' => 'Test body text.',
         ]);
 
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->otherAccount->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Other Account Content',
@@ -129,20 +81,19 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_index_filters_by_posts_true(): void
     {
-        $postedContent = SocialMediaContent::create([
+        $postedContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Posted Content',
             'content' => 'This was posted.',
         ]);
 
-        SocialMediaPost::create([
+        SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $postedContent->id,
-            'posted_at' => now(),
         ]);
 
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Unposted Content',
@@ -158,20 +109,19 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_index_filters_by_posts_false(): void
     {
-        $postedContent = SocialMediaContent::create([
+        $postedContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Posted Content',
             'content' => 'This was posted.',
         ]);
 
-        SocialMediaPost::create([
+        SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $postedContent->id,
-            'posted_at' => now(),
         ]);
 
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Unposted Content',
@@ -187,20 +137,19 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_index_filters_by_schedules_true(): void
     {
-        $scheduledContent = SocialMediaContent::create([
+        $scheduledContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Scheduled Content',
             'content' => 'This is scheduled.',
         ]);
 
-        SocialMediaSchedule::create([
+        SocialMediaSchedule::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $scheduledContent->id,
-            'scheduled_at' => now()->addDay(),
         ]);
 
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Unscheduled Content',
@@ -216,20 +165,19 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_index_filters_by_schedules_false(): void
     {
-        $scheduledContent = SocialMediaContent::create([
+        $scheduledContent = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Scheduled Content',
             'content' => 'This is scheduled.',
         ]);
 
-        SocialMediaSchedule::create([
+        SocialMediaSchedule::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $scheduledContent->id,
-            'scheduled_at' => now()->addDay(),
         ]);
 
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Unscheduled Content',
@@ -245,14 +193,14 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_index_filters_by_single_category(): void
     {
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Holiday Content',
             'content' => 'Holidays are fun.',
         ]);
 
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->secondCategory->id,
             'title' => 'Trivia Content',
@@ -268,14 +216,14 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_index_filters_by_multiple_categories(): void
     {
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Holiday Content',
             'content' => 'Holidays are fun.',
         ]);
 
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->secondCategory->id,
             'title' => 'Trivia Content',
@@ -292,37 +240,35 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_index_combines_posts_and_category_filters(): void
     {
-        $postedHoliday = SocialMediaContent::create([
+        $postedHoliday = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Posted Holiday',
             'content' => 'Posted holiday content.',
         ]);
 
-        SocialMediaPost::create([
+        SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $postedHoliday->id,
-            'posted_at' => now(),
         ]);
 
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Unposted Holiday',
             'content' => 'Not posted yet.',
         ]);
 
-        $postedTrivia = SocialMediaContent::create([
+        $postedTrivia = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->secondCategory->id,
             'title' => 'Posted Trivia',
             'content' => 'Posted trivia content.',
         ]);
 
-        SocialMediaPost::create([
+        SocialMediaPost::factory()->create([
             'account_id' => $this->account->id,
             'social_media_content_id' => $postedTrivia->id,
-            'posted_at' => now(),
         ]);
 
         $response = $this->getJson(
@@ -336,14 +282,10 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_index_respects_per_page_parameter(): void
     {
-        for ($i = 1; $i <= 5; $i++) {
-            SocialMediaContent::create([
-                'account_id' => $this->account->id,
-                'social_media_category_id' => $this->category->id,
-                'title' => "Content {$i}",
-                'content' => "Body {$i}.",
-            ]);
-        }
+        SocialMediaContent::factory()->count(5)->create([
+            'account_id' => $this->account->id,
+            'social_media_category_id' => $this->category->id,
+        ]);
 
         $response = $this->getJson('/api/social_media_contents?per_page=2');
 
@@ -356,7 +298,7 @@ class SocialMediaContentControllerTest extends TestCase
     /** -------- SHOW -------- */
     public function test_show_returns_a_single_content_for_account(): void
     {
-        $content = SocialMediaContent::create([
+        $content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Show Me',
@@ -396,7 +338,7 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_show_forbidden_for_content_belonging_to_another_account(): void
     {
-        $otherContent = SocialMediaContent::create([
+        $otherContent = SocialMediaContent::factory()->create([
             'account_id' => $this->otherAccount->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Other Account Content',
@@ -513,7 +455,7 @@ class SocialMediaContentControllerTest extends TestCase
     /** -------- UPDATE -------- */
     public function test_update_modifies_content_belonging_to_account(): void
     {
-        $content = SocialMediaContent::create([
+        $content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Original Title',
@@ -555,7 +497,7 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_update_can_change_category(): void
     {
-        $content = SocialMediaContent::create([
+        $content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Category Change',
@@ -581,7 +523,7 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_update_allows_partial_update(): void
     {
-        $content = SocialMediaContent::create([
+        $content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Partial Update',
@@ -610,7 +552,7 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_update_forbidden_for_content_belonging_to_another_account(): void
     {
-        $otherContent = SocialMediaContent::create([
+        $otherContent = SocialMediaContent::factory()->create([
             'account_id' => $this->otherAccount->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Other Account Content',
@@ -631,7 +573,7 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_update_fails_with_nonexistent_category(): void
     {
-        $content = SocialMediaContent::create([
+        $content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Bad Category Update',
@@ -648,7 +590,7 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_update_fails_with_title_exceeding_max_length(): void
     {
-        $content = SocialMediaContent::create([
+        $content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Max Length Test',
@@ -665,7 +607,7 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_update_with_empty_payload_returns_unchanged_content(): void
     {
-        $content = SocialMediaContent::create([
+        $content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Unchanged',
@@ -682,7 +624,7 @@ class SocialMediaContentControllerTest extends TestCase
     /** -------- DESTROY -------- */
     public function test_destroy_deletes_content_belonging_to_account(): void
     {
-        $content = SocialMediaContent::create([
+        $content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'To Be Deleted',
@@ -708,7 +650,7 @@ class SocialMediaContentControllerTest extends TestCase
 
     public function test_destroy_forbidden_for_content_belonging_to_another_account(): void
     {
-        $otherContent = SocialMediaContent::create([
+        $otherContent = SocialMediaContent::factory()->create([
             'account_id' => $this->otherAccount->id,
             'social_media_category_id' => $this->category->id,
             'title' => 'Other Account Content',

@@ -35,8 +35,6 @@ class User extends Authenticatable
      * The attributes that should be cast.
      *
      * @var array<string, string>
-     *
-     * @ai The model wanted to turn this into a function - casts() - rejected, I personally prefer shorthand here unless we have a need for a more complex / conditional cast for some reason.
      */
     protected $casts = [
         'email_verified_at' => 'datetime',

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Http\Middleware\BetterBeWillie;
 use App\Jobs\GenerateVideoThumbnailJob;
 use App\Jobs\UploadToMuxJob;
 use App\Models\Account;
@@ -11,24 +10,16 @@ use App\Models\SocialMediaCategory;
 use App\Models\SocialMediaContent;
 use App\Models\User;
 use App\Services\MuxService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Mockery\MockInterface;
-use Tests\TestCase;
 
-class MediaTest extends TestCase
+class MediaTest extends BaseTestCase
 {
-    use RefreshDatabase;
-
-    private Account $account;
-
     private Account $otherAccount;
-
-    private User $user;
 
     private User $otherUser;
 
@@ -40,46 +31,19 @@ class MediaTest extends TestCase
     {
         parent::setUp();
 
-        $this->withoutMiddleware(BetterBeWillie::class);
+        $this->otherAccount = $this->createOtherAccount();
+        $this->otherUser = $this->createUserForAccount($this->otherAccount);
 
-        $this->account = Account::create([
-            'name' => 'Test Account',
-            'website' => 'https://test.com',
-        ]);
+        $category = SocialMediaCategory::factory()->create(['name' => 'holidays']);
 
-        $this->otherAccount = Account::create([
-            'name' => 'Other Account',
-            'website' => 'https://other.com',
-        ]);
-
-        $this->user = User::forceCreate([
-            'name' => 'Test User',
-            'email' => 'test@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->account->id,
-            'is_admin' => false,
-        ]);
-
-        $this->otherUser = User::forceCreate([
-            'name' => 'Other User',
-            'email' => 'other@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->otherAccount->id,
-            'is_admin' => false,
-        ]);
-
-        $this->actingAs($this->user);
-
-        $category = SocialMediaCategory::create(['name' => 'holidays']);
-
-        $this->content = SocialMediaContent::create([
+        $this->content = SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $category->id,
             'title' => 'Test Content',
             'content' => 'Test body text.',
         ]);
 
-        $this->otherContent = SocialMediaContent::create([
+        $this->otherContent = SocialMediaContent::factory()->create([
             'account_id' => $this->otherAccount->id,
             'social_media_category_id' => $category->id,
             'title' => 'Other Content',

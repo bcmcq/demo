@@ -2,60 +2,27 @@
 
 namespace Tests\Feature;
 
-use App\Http\Middleware\BetterBeWillie;
-use App\Models\Account;
 use App\Models\SocialMediaCategory;
 use App\Models\SocialMediaContent;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class SocialMediaCategoryControllerTest extends TestCase
+class SocialMediaCategoryControllerTest extends BaseTestCase
 {
-    use RefreshDatabase;
-
-    private Account $account;
-
-    private User $user;
-
     private User $adminUser;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->withoutMiddleware(BetterBeWillie::class);
-
-        $this->account = Account::create([
-            'name' => 'Test Account',
-            'website' => 'https://test.com',
-        ]);
-
-        $this->user = User::forceCreate([
-            'name' => 'Willie Dustice',
-            'email' => 'willie@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->account->id,
-            'is_admin' => false,
-        ]);
-
-        $this->adminUser = User::forceCreate([
-            'name' => 'Admin User',
-            'email' => 'admin@test.com',
-            'password' => bcrypt('password'),
-            'account_id' => $this->account->id,
-            'is_admin' => true,
-        ]);
-
-        $this->actingAs($this->user);
+        $this->adminUser = $this->createAdminUser();
     }
 
     /** -------- INDEX -------- */
     public function test_index_returns_paginated_categories(): void
     {
-        SocialMediaCategory::create(['name' => 'holidays']);
-        SocialMediaCategory::create(['name' => 'trivia']);
-        SocialMediaCategory::create(['name' => 'news']);
+        SocialMediaCategory::factory()->create(['name' => 'holidays']);
+        SocialMediaCategory::factory()->create(['name' => 'trivia']);
+        SocialMediaCategory::factory()->create(['name' => 'news']);
 
         $response = $this->getJson('/api/social_media_categories');
 
@@ -80,9 +47,9 @@ class SocialMediaCategoryControllerTest extends TestCase
 
     public function test_index_sorts_by_name_by_default(): void
     {
-        SocialMediaCategory::create(['name' => 'trivia']);
-        SocialMediaCategory::create(['name' => 'holidays']);
-        SocialMediaCategory::create(['name' => 'news']);
+        SocialMediaCategory::factory()->create(['name' => 'trivia']);
+        SocialMediaCategory::factory()->create(['name' => 'holidays']);
+        SocialMediaCategory::factory()->create(['name' => 'news']);
 
         $response = $this->getJson('/api/social_media_categories');
 
@@ -94,8 +61,8 @@ class SocialMediaCategoryControllerTest extends TestCase
 
     public function test_index_filters_by_name(): void
     {
-        SocialMediaCategory::create(['name' => 'holidays']);
-        SocialMediaCategory::create(['name' => 'trivia']);
+        SocialMediaCategory::factory()->create(['name' => 'holidays']);
+        SocialMediaCategory::factory()->create(['name' => 'trivia']);
 
         $response = $this->getJson('/api/social_media_categories?filter[name]=holi');
 
@@ -106,20 +73,11 @@ class SocialMediaCategoryControllerTest extends TestCase
 
     public function test_index_includes_contents_count(): void
     {
-        $category = SocialMediaCategory::create(['name' => 'holidays']);
+        $category = SocialMediaCategory::factory()->create(['name' => 'holidays']);
 
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->count(2)->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $category->id,
-            'title' => 'Content 1',
-            'content' => 'Body 1.',
-        ]);
-
-        SocialMediaContent::create([
-            'account_id' => $this->account->id,
-            'social_media_category_id' => $category->id,
-            'title' => 'Content 2',
-            'content' => 'Body 2.',
         ]);
 
         $response = $this->getJson('/api/social_media_categories');
@@ -130,9 +88,13 @@ class SocialMediaCategoryControllerTest extends TestCase
 
     public function test_index_respects_per_page_parameter(): void
     {
-        for ($i = 1; $i <= 5; $i++) {
-            SocialMediaCategory::create(['name' => "Category {$i}"]);
-        }
+        SocialMediaCategory::factory()->count(5)->sequence(
+            ['name' => 'Category 1'],
+            ['name' => 'Category 2'],
+            ['name' => 'Category 3'],
+            ['name' => 'Category 4'],
+            ['name' => 'Category 5'],
+        )->create();
 
         $response = $this->getJson('/api/social_media_categories?per_page=2');
 
@@ -145,13 +107,11 @@ class SocialMediaCategoryControllerTest extends TestCase
     /** -------- SHOW -------- */
     public function test_show_returns_a_single_category(): void
     {
-        $category = SocialMediaCategory::create(['name' => 'holidays']);
+        $category = SocialMediaCategory::factory()->create(['name' => 'holidays']);
 
-        SocialMediaContent::create([
+        SocialMediaContent::factory()->create([
             'account_id' => $this->account->id,
             'social_media_category_id' => $category->id,
-            'title' => 'Content 1',
-            'content' => 'Body 1.',
         ]);
 
         $response = $this->getJson('/api/social_media_categories/'.$category->id);
@@ -208,7 +168,7 @@ class SocialMediaCategoryControllerTest extends TestCase
     {
         $this->actingAs($this->adminUser);
 
-        SocialMediaCategory::create(['name' => 'holidays']);
+        SocialMediaCategory::factory()->create(['name' => 'holidays']);
 
         $response = $this->postJson('/api/social_media_categories', ['name' => 'holidays']);
 
@@ -231,7 +191,7 @@ class SocialMediaCategoryControllerTest extends TestCase
     {
         $this->actingAs($this->adminUser);
 
-        $category = SocialMediaCategory::create(['name' => 'to_delete']);
+        $category = SocialMediaCategory::factory()->create(['name' => 'to_delete']);
 
         $response = $this->deleteJson('/api/social_media_categories/'.$category->id);
 
@@ -243,7 +203,7 @@ class SocialMediaCategoryControllerTest extends TestCase
 
     public function test_destroy_forbidden_for_non_admin(): void
     {
-        $category = SocialMediaCategory::create(['name' => 'protected']);
+        $category = SocialMediaCategory::factory()->create(['name' => 'protected']);
 
         $response = $this->deleteJson('/api/social_media_categories/'.$category->id);
 

@@ -109,6 +109,14 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
         ],
 
+        'autopost' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/autopost.log'),
+            'level' => 'debug',
+            'days' => 30,
+            'formatter' => Monolog\Formatter\JsonFormatter::class,
+        ],
+
         'null' => [
             'driver' => 'monolog',
             'handler' => NullHandler::class,

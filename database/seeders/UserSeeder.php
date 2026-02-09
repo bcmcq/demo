@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
             'name' => 'Willie Dustice',
             'email' => 'iam@wille.com',
             'password' => 'supersecurepass',
+            'is_admin' => true,
         ]);
     }
 }

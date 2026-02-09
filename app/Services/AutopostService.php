@@ -8,6 +8,8 @@ use Illuminate\Support\Collection;
 
 class AutopostService
 {
+    private AutopostLoggerService $logger;
+
     /**
      * Select a random piece of content using cumulative weight distribution.
      *
@@ -41,13 +43,25 @@ class AutopostService
      */
     public function selectContent(int $accountId, ?int $randomValue = null): ?SocialMediaContent
     {
+        $this->logger = new AutopostLoggerService;
+
         $weights = $this->loadWeights($accountId);
 
         if ($weights->isEmpty()) {
+            $this->logger->noWeights($accountId);
+
             return null;
         }
 
-        return $this->selectFromWeights($accountId, $weights, $randomValue);
+        $this->logger->weightsLoaded($accountId, $weights);
+
+        $content = $this->selectFromWeights($accountId, $weights, $randomValue);
+
+        if ($content === null) {
+            $this->logger->allCategoriesExhausted($accountId);
+        }
+
+        return $content;
     }
 
     /**
@@ -84,12 +98,16 @@ class AutopostService
         $content = $this->findAvailableContent($accountId, $categoryId);
 
         if ($content !== null) {
+            $this->logger->contentSelected($accountId, $content, $categoryId);
+
             return $content;
         }
 
         $remaining = $weights->reject(
             fn (array $w) => $w['category_id'] === $categoryId
         )->values();
+
+        $this->logger->categorySkipped($accountId, $categoryId, $remaining->count());
 
         return $this->selectFromWeights($accountId, $remaining, $randomValue);
     }
@@ -111,6 +129,8 @@ class AutopostService
             $cumulative += $entry['weight'];
 
             if ($random <= $cumulative) {
+                $this->logger->categoryPicked($entry['category_id'], $random, $totalWeight, $cumulative);
+
                 return $entry['category_id'];
             }
         }
@@ -125,10 +145,9 @@ class AutopostService
     protected function findAvailableContent(int $accountId, int $categoryId): ?SocialMediaContent
     {
         return SocialMediaContent::query()
-            ->where('account_id', $accountId)
-            ->where('social_media_category_id', $categoryId)
-            ->whereDoesntHave('posts')
-            ->whereDoesntHave('schedules')
+            ->forAccount($accountId)
+            ->forCategory($categoryId)
+            ->available()
             ->inRandomOrder()
             ->first();
     }

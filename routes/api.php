@@ -15,18 +15,20 @@ Route::middleware('auth.betterbewillie')->group(function () {
     Route::apiResource('social_media_categories', SocialMediaCategoryController::class)->except(['update']);
 
     /* Content Management */
-    Route::get('social_media_contents/autopost', SocialMediaAutopostController::class)->name('social_media_contents.autopost');
-    Route::post('social_media_contents/{social_media_content}/rewrite', AIRewriteController::class)->name('social_media_contents.rewrite');
-    Route::post('social_media_contents/generate', AIGenerateController::class)->name('social_media_contents.generate');
-    Route::get('social_media_contents/generate/{content_generation_request}', AIStatusController::class)->name('social_media_contents.generate.status');
+    Route::prefix('social_media_contents')->name('social_media_contents.')->group(function () {
+        Route::get('autopost', SocialMediaAutopostController::class)->name('autopost');
+        Route::post('{social_media_content}/rewrite', AIRewriteController::class)->name('rewrite');
+        Route::post('generate', AIGenerateController::class)->name('generate');
+        Route::get('generate/{content_generation_request}', AIStatusController::class)->name('generate.status');
+    });
     Route::apiResource('social_media_contents', SocialMediaContentController::class);
 
-    /* Media Management */
-    Route::post('social_media_contents/{social_media_content}/media/presigned_url', [MediaController::class, 'presignedUrl'])->name('social_media_contents.media.presigned-url');
-    Route::post('social_media_contents/{social_media_content}/media', [MediaController::class, 'store'])->name('social_media_contents.media.store');
-    Route::get('social_media_contents/{social_media_content}/media', [MediaController::class, 'index'])->name('social_media_contents.media.index');
-    Route::get('social_media_contents/{social_media_content}/media/{media}', [MediaController::class, 'show'])->name('social_media_contents.media.show');
-    Route::delete('social_media_contents/{social_media_content}/media/{media}', [MediaController::class, 'destroy'])->name('social_media_contents.media.destroy');
+    /* Media Management (nested under content) */
+    Route::post('social_media_contents/{social_media_content}/media/presigned_url', [MediaController::class, 'presignedUrl'])
+        ->name('social_media_contents.media.presigned-url');
+    Route::apiResource('social_media_contents.media', MediaController::class)
+        ->except(['update'])
+        ->parameters(['media' => 'media']);
 
     /* Post Management */
     Route::apiResource('social_media_posts', SocialMediaPostController::class)->except(['update']);

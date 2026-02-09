@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SocialMediaContent extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -20,17 +24,15 @@ class SocialMediaContent extends Model
         'content',
     ];
 
+    /* -------- Relationships -------- */
+
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
     }
 
-    /**
-     * @ai accepted this change but this needs to be reviewed, looks like we're missing a FK or index here.
-     */
     public function category(): BelongsTo
     {
-        // TODO: Review this, it looks like we're missing some database FK's or indexes here.
         return $this->belongsTo(SocialMediaCategory::class, 'social_media_category_id');
     }
 
@@ -47,5 +49,63 @@ class SocialMediaContent extends Model
     public function media(): HasMany
     {
         return $this->hasMany(Media::class);
+    }
+
+    /* -------- Query Scopes -------- */
+
+    /**
+     * Scope to content belonging to a specific account.
+     */
+    public function scopeForAccount(Builder $query, int $accountId): Builder
+    {
+        return $query->where('account_id', $accountId);
+    }
+
+    /**
+     * Scope to content belonging to a specific category.
+     */
+    public function scopeForCategory(Builder $query, int $categoryId): Builder
+    {
+        return $query->where('social_media_category_id', $categoryId);
+    }
+
+    /**
+     * Scope to content that has been posted at least once.
+     */
+    public function scopePosted(Builder $query): Builder
+    {
+        return $query->whereHas('posts');
+    }
+
+    /**
+     * Scope to content that has never been posted.
+     */
+    public function scopeUnposted(Builder $query): Builder
+    {
+        return $query->whereDoesntHave('posts');
+    }
+
+    /**
+     * Scope to content that has been scheduled at least once.
+     */
+    public function scopeScheduled(Builder $query): Builder
+    {
+        return $query->whereHas('schedules');
+    }
+
+    /**
+     * Scope to content that has never been scheduled.
+     */
+    public function scopeUnscheduled(Builder $query): Builder
+    {
+        return $query->whereDoesntHave('schedules');
+    }
+
+    /**
+     * Scope to content that is available for autopost: neither posted nor scheduled.
+     */
+    public function scopeAvailable(Builder $query): Builder
+    {
+        return $query->unposted()->unscheduled();
     }
 }

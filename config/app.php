@@ -209,6 +209,19 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Request Timing
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, the RequestTiming middleware captures query counts,
+    | response times, and memory metrics on every API request. Disable
+    | in production to avoid the overhead of the query log.
+    |
+    */
+
+    'request_timing' => env('REQUEST_TIMING_ENABLED', false),
+
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),

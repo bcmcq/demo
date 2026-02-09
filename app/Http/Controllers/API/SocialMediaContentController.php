@@ -27,7 +27,7 @@ class SocialMediaContentController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $query = QueryBuilder::for(
-            SocialMediaContent::query()->where('account_id', $request->user()->account_id)
+            SocialMediaContent::query()->forAccount($request->user()->account_id)
         )
             ->allowedFilters([
                 AllowedFilter::exact('category', 'social_media_category_id'),

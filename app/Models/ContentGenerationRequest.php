@@ -35,17 +35,16 @@ class ContentGenerationRequest extends Model
     ];
 
     /**
+     * The attributes that should be cast.
+     *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'platform' => Platform::class,
-            'tone' => Tone::class,
-            'status' => ContentGenerationStatus::class,
-            'generated_content' => 'array',
-        ];
-    }
+    protected $casts = [
+        'platform' => Platform::class,
+        'tone' => Tone::class,
+        'status' => ContentGenerationStatus::class,
+        'generated_content' => 'array',
+    ];
 
     public function account(): BelongsTo
     {

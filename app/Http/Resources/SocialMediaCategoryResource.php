@@ -10,6 +10,19 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class SocialMediaCategoryResource extends JsonResource
 {
+    protected bool $slimResource = false;
+
+    /**
+     * Create a slim resource instance that excludes timestamps.
+     */
+    public static function slim(mixed $resource): static
+    {
+        $instance = new static($resource);
+        $instance->slimResource = true;
+
+        return $instance;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -17,12 +30,17 @@ class SocialMediaCategoryResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $data = [
             'id' => $this->id,
             'name' => $this->name,
             'contents_count' => $this->whenCounted('contents'),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ];
+
+        if (! $this->slimResource) {
+            $data['created_at'] = $this->created_at;
+            $data['updated_at'] = $this->updated_at;
+        }
+
+        return $data;
     }
 }

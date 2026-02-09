@@ -23,7 +23,7 @@ class AIContentWriterService
     public function rewrite(SocialMediaContent $content, Platform $platform, Tone $tone): array
     {
         $response = Prism::structured()
-            ->using(Provider::OpenAI, env('OPENAI_MODEL', 'gpt-4o-mini'))
+            ->using(Provider::OpenAI, config('services.openai.model'))
             ->withSchema($this->buildVariationsSchema())
             ->withSystemPrompt($this->buildSystemPrompt($platform, $tone))
             ->withPrompt($this->buildRewritePrompt($content, $platform))
@@ -40,7 +40,7 @@ class AIContentWriterService
     public function generate(string $prompt, Platform $platform, Tone $tone): array
     {
         $response = Prism::structured()
-            ->using(Provider::OpenAI, env('OPENAI_MODEL', 'gpt-4o-mini'))
+            ->using(Provider::OpenAI, config('services.openai.model'))
             ->withSchema($this->buildVariationsSchema())
             ->withSystemPrompt($this->buildSystemPrompt($platform, $tone))
             ->withPrompt($this->buildGeneratePrompt($prompt, $platform))

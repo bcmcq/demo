@@ -34,10 +34,10 @@ class SocialMediaContentController extends Controller
                 AllowedFilter::custom('posts', new HasRelationFilter),
                 AllowedFilter::custom('schedules', new HasRelationFilter),
             ])
-            ->allowedIncludes(['category', 'posts', 'schedules'])
+            ->allowedIncludes(['category', 'posts', 'schedules', 'media'])
             ->allowedSorts(['title', 'created_at', 'updated_at'])
             ->defaultSort('-created_at')
-            ->with(['category', 'posts', 'schedules'])
+            // ->with(['category', 'posts', 'schedules', 'media'])
             ->paginate($request->input('per_page', 15));
 
         return SocialMediaContentResource::collection($query);
@@ -48,7 +48,7 @@ class SocialMediaContentController extends Controller
      */
     public function show(SocialMediaContent $socialMediaContent): SocialMediaContentResource
     {
-        $socialMediaContent->load(['category', 'posts', 'schedules']);
+        $socialMediaContent->load(['category', 'posts', 'schedules', 'media']);
 
         return new SocialMediaContentResource($socialMediaContent);
     }

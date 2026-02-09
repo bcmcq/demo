@@ -110,11 +110,6 @@ class SocialMediaContentControllerTest extends TestCase
                         'account_id',
                         'title',
                         'content',
-                        'category' => ['id', 'name'],
-                        'is_posted',
-                        'is_scheduled',
-                        'posts_count',
-                        'schedules_count',
                         'created_at',
                         'updated_at',
                     ],
@@ -383,10 +378,9 @@ class SocialMediaContentControllerTest extends TestCase
                     'title',
                     'content',
                     'category' => ['id', 'name'],
-                    'is_posted',
-                    'is_scheduled',
-                    'posts_count',
-                    'schedules_count',
+                    'posts',
+                    'schedules',
+                    'media',
                     'created_at',
                     'updated_at',
                 ],
@@ -431,8 +425,8 @@ class SocialMediaContentControllerTest extends TestCase
             ->assertJsonPath('data.account_id', $this->account->id)
             ->assertJsonPath('data.category.id', $this->category->id)
             ->assertJsonPath('data.category.name', 'holidays')
-            ->assertJsonPath('data.is_posted', false)
-            ->assertJsonPath('data.is_scheduled', false);
+            ->assertJsonPath('data.posts', [])
+            ->assertJsonPath('data.schedules', []);
 
         $this->assertDatabaseHas('social_media_contents', [
             'account_id' => $this->account->id,
@@ -545,10 +539,8 @@ class SocialMediaContentControllerTest extends TestCase
                     'title',
                     'content',
                     'category' => ['id', 'name'],
-                    'is_posted',
-                    'is_scheduled',
-                    'posts_count',
-                    'schedules_count',
+                    'posts',
+                    'schedules',
                     'created_at',
                     'updated_at',
                 ],

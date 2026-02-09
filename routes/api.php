@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\AIGenerateController;
 use App\Http\Controllers\API\AIRewriteController;
 use App\Http\Controllers\API\AIStatusController;
+use App\Http\Controllers\API\MediaController;
 use App\Http\Controllers\API\SocialMediaAutopostController;
 use App\Http\Controllers\API\SocialMediaCategoryController;
 use App\Http\Controllers\API\SocialMediaContentController;
@@ -19,6 +20,13 @@ Route::middleware('auth.betterbewillie')->group(function () {
     Route::post('social_media_contents/generate', AIGenerateController::class)->name('social_media_contents.generate');
     Route::get('social_media_contents/generate/{content_generation_request}', AIStatusController::class)->name('social_media_contents.generate.status');
     Route::apiResource('social_media_contents', SocialMediaContentController::class);
+
+    /* Media Management */
+    Route::post('social_media_contents/{social_media_content}/media/presigned_url', [MediaController::class, 'presignedUrl'])->name('social_media_contents.media.presigned-url');
+    Route::post('social_media_contents/{social_media_content}/media', [MediaController::class, 'store'])->name('social_media_contents.media.store');
+    Route::get('social_media_contents/{social_media_content}/media', [MediaController::class, 'index'])->name('social_media_contents.media.index');
+    Route::get('social_media_contents/{social_media_content}/media/{media}', [MediaController::class, 'show'])->name('social_media_contents.media.show');
+    Route::delete('social_media_contents/{social_media_content}/media/{media}', [MediaController::class, 'destroy'])->name('social_media_contents.media.destroy');
 
     /* Post Management */
     Route::apiResource('social_media_posts', SocialMediaPostController::class)->except(['update']);

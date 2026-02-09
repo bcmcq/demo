@@ -43,4 +43,9 @@ class SocialMediaContent extends Model
     {
         return $this->hasMany(SocialMediaSchedule::class);
     }
+
+    public function media(): HasMany
+    {
+        return $this->hasMany(Media::class);
+    }
 }

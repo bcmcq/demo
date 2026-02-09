@@ -7,6 +7,7 @@ use App\Models\ContentGenerationRequest;
 use App\Services\AIContentWriterService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class GenerateContentJob implements ShouldQueue
@@ -69,6 +70,10 @@ class GenerateContentJob implements ShouldQueue
         $this->contentGenerationRequest->update([
             'status' => ContentGenerationStatus::Failed,
             'error' => $exception?->getMessage() ?? 'An unknown error occurred.',
+        ]);
+
+        Log::warning('Failed to generate content for content generation request #'.$this->contentGenerationRequest->id, [
+            'error' => $exception?->getMessage(),
         ]);
     }
 }

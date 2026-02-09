@@ -26,7 +26,7 @@ Built out the [autopost feature](#extra-functionality) as outlined with weighted
 
 ### AI Content Writer
 
-Integrated [prism](https://prismphp.com/) and ~~OpenAI~~ OpenRouter (swapped because it's free) api to generate content as outlined [here](_ADVANCED_TASKS.md#1-ai-content-writer). Requests to rewrite or generate content are queued and dispatched by a job in the background. Another endpoint is available for checking the status, which will return the results when complete. You can set `QUEUE_CONNECTION` to `sync` in your .env file to turn off redis, which will disable the queuing and run everything synchronosly.
+Integrated [prism](https://prismphp.com/) and ~~OpenAI~~ OpenRouter (swapped because it's free) api to generate content as outlined [here](_ADVANCED_TASKS.md#1-ai-content-writer). Requests to rewrite or generate content are queued and dispatched by a job in the background. Another endpoint is available for checking the status, which will return the results when complete. You can set `QUEUE_CONNECTION` to `sync` in your .env file to disconnect redis, which will disable the queuing and run everything synchronosly.
 
 ### Media Uploads
 

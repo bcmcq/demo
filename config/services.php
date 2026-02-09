@@ -36,6 +36,10 @@ return [
         'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
     ],
 
+    'openrouter' => [
+        'model' => env('OPENROUTER_MODEL', 'google/gemma-3-27b-it:free'),
+    ],
+
     'minio' => [
         'forwarded_port' => env('FORWARD_MINIO_PORT', 9002),
     ],

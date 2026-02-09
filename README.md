@@ -1,10 +1,10 @@
 # Social Media Manager
 
-Below are the tasks completed as outlined in [_INSTRUCTIONS.md](./_INSTRUCTIONS.md).
+Below are the setup instructions & tasks completed as outlined in [_INSTRUCTIONS.md](./_INSTRUCTIONS.md).
 
 ## Setup & Requirements
 
-Including the dependencies of the original project that are [detailed here](#instructions). The following command should get you up and running with everything needed to test. I will need to provide you with a key.
+Including the dependencies of the original project that are [detailed here](#instructions), the following command should get you up and running with everything needed to test. I will need to provide you with a key.
 
 ```shell
 ./setup.sh --key={provided-key}
@@ -22,11 +22,11 @@ Building out the requested [CRUD endpoints](#basic-crud) for content. These can 
 
 ### Autopost
 
-Built out the [autopost feature](#extra-functionality) as outlined with weighted algotihm for selecting content to post.
+Built out the [autopost feature](#extra-functionality) as outlined with weighted algorithm for selecting content to post.
 
 ### AI Content Writer
 
-Integrated [prism](https://prismphp.com/) and OpenAI api to generate content as outlined [here](_ADVANCED_TASKS.md#1-ai-content-writer). Requests to rewrite or generate content are queued and dispatched by a job in the background. Another endpoint is available for checking the status, which will return the results when complete. You can set `QUEUE_CONNECTION` to `sync` in your .env file to turn off redis, which will disable the queuing and run everything synchronosly.
+Integrated [prism](https://prismphp.com/) and ~~OpenAI~~ OpenRouter (swapped because it's free) api to generate content as outlined [here](_ADVANCED_TASKS.md#1-ai-content-writer). Requests to rewrite or generate content are queued and dispatched by a job in the background. Another endpoint is available for checking the status, which will return the results when complete. You can set `QUEUE_CONNECTION` to `sync` in your .env file to turn off redis, which will disable the queuing and run everything synchronosly.
 
 ### Media Uploads
 
@@ -95,7 +95,7 @@ Once complete, follow these instructions to run the app.
 
 - Clone this repo via `git clone git@github.com:practicegenius/laravel-social-media-manager.git`
 - `cd laravel-social-media-manager`
-- Run `./setup.sh` (**NOTE:** This will initialize Docker containers and can run a little long the first time.  If you drink coffee, I suggest grabbing a cup ☕ 😅)
+- Run `./setup.sh --key={provided-key}` (**NOTE:** This will initialize Docker containers and can run a little long the first time.  If you drink coffee, I suggest grabbing a cup ☕ 😅)
 
 Once setup is complete, you should be able to access the boilerplate app at http://localhost
 

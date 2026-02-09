@@ -27,6 +27,7 @@ class SocialMediaPostResource extends JsonResource
             /** @example "2026-02-09T10:00:00.000000Z" */
             'posted_at' => $this->posted_at,
             'content' => new SocialMediaContentResource($this->whenLoaded('content')),
+            'media' => MediaResource::collection($this->whenLoaded('media')),
         ];
     }
 }

@@ -29,7 +29,7 @@ class SocialMediaPostController extends Controller
      * Returns a paginated list of posts for the authenticated user's account.
      */
     #[QueryParameter('filter[content]', description: 'Filter by content ID.', type: 'int', example: 1)]
-    #[QueryParameter('include', description: 'Comma-separated relationships to include: content.', type: 'string', example: 'content')]
+    #[QueryParameter('include', description: 'Comma-separated relationships to include: content, media.', type: 'string', example: 'content')]
     #[QueryParameter('sort', description: 'Sort by field. Prefix with - for descending. Allowed: posted_at.', type: 'string', example: '-posted_at')]
     #[QueryParameter('per_page', description: 'Number of items per page.', type: 'int', default: 15, example: 25)]
     public function index(Request $request): AnonymousResourceCollection
@@ -40,7 +40,7 @@ class SocialMediaPostController extends Controller
             ->allowedFilters([
                 AllowedFilter::exact('content', 'social_media_content_id'),
             ])
-            ->allowedIncludes(['content'])
+            ->allowedIncludes(['content', 'media'])
             ->allowedSorts(['posted_at'])
             ->defaultSort('-posted_at')
             ->paginate($request->input('per_page', 15));
@@ -55,7 +55,7 @@ class SocialMediaPostController extends Controller
      */
     public function show(SocialMediaPost $socialMediaPost): SocialMediaPostResource
     {
-        $socialMediaPost->load('content');
+        $socialMediaPost->load(['content', 'media']);
 
         return new SocialMediaPostResource($socialMediaPost);
     }

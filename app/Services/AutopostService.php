@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 
 class AutopostService
 {
-    private AutopostLoggerService $logger;
+    public function __construct(private AutopostLoggerService $logger = new AutopostLoggerService()) {}
 
     /**
      * Select a random piece of content using cumulative weight distribution.
@@ -43,8 +43,6 @@ class AutopostService
      */
     public function selectContent(int $accountId, ?int $randomValue = null): ?SocialMediaContent
     {
-        $this->logger = new AutopostLoggerService;
-
         $weights = $this->loadWeights($accountId);
 
         if ($weights->isEmpty()) {
@@ -109,7 +107,7 @@ class AutopostService
 
         $this->logger->categorySkipped($accountId, $categoryId, $remaining->count());
 
-        return $this->selectFromWeights($accountId, $remaining, $randomValue);
+        return $this->selectFromWeights($accountId, $remaining);
     }
 
     /**

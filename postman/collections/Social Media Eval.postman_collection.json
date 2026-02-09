@@ -159,7 +159,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{domain}}/social_media_contents?include=category,posts,schedules,media",
+              "raw": "{{domain}}/social_media_contents?filter[media]=true&include=category,posts,schedules,media",
               "host": [
                 "{{domain}}"
               ],
@@ -175,13 +175,19 @@
                 },
                 {
                   "key": "filter[category]",
-                  "value": "1",
+                  "value": "true",
                   "disabled": true
                 },
                 {
                   "key": "filter[schedules]",
                   "value": "true",
                   "disabled": true
+                },
+                {
+                  "key": "filter[media]",
+                  "value": "true",
+                  "type": "text",
+                  "uuid": "46f209cb-32d2-4425-a59a-d4dbcf6a6185"
                 },
                 {
                   "key": "include",
@@ -616,7 +622,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{domain}}/social_media_posts",
+              "raw": "{{domain}}/social_media_posts?include=content,media",
               "host": [
                 "{{domain}}"
               ],
@@ -631,8 +637,8 @@
                 },
                 {
                   "key": "include",
-                  "value": "content",
-                  "disabled": true
+                  "value": "content,media",
+                  "uuid": "85c96f66-2226-46f4-b01b-929792a95f8a"
                 },
                 {
                   "key": "sort",

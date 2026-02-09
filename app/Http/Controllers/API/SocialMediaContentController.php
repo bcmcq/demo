@@ -34,6 +34,7 @@ class SocialMediaContentController extends Controller
     #[QueryParameter('filter[category]', description: 'Filter by category ID.', type: 'int', example: 1)]
     #[QueryParameter('filter[posts]', description: 'Filter by post existence: 1 = has posts, 0 = no posts.', type: 'string', example: '1')]
     #[QueryParameter('filter[schedules]', description: 'Filter by schedule existence: 1 = has schedules, 0 = no schedules.', type: 'string', example: '0')]
+    #[QueryParameter('filter[media]', description: 'Filter by media existence: 1 = has media, 0 = no media.', type: 'string', example: '1')]
     #[QueryParameter('include', description: 'Comma-separated relationships to include: category, posts, schedules, media.', type: 'string', example: 'category,media')]
     #[QueryParameter('sort', description: 'Sort by field. Prefix with - for descending. Allowed: title, created_at, updated_at.', type: 'string', example: '-created_at')]
     #[QueryParameter('per_page', description: 'Number of items per page.', type: 'int', default: 15, example: 25)]
@@ -46,6 +47,7 @@ class SocialMediaContentController extends Controller
                 AllowedFilter::exact('category', 'social_media_category_id'),
                 AllowedFilter::custom('posts', new HasRelationFilter),
                 AllowedFilter::custom('schedules', new HasRelationFilter),
+                AllowedFilter::custom('media', new HasRelationFilter),
             ])
             ->allowedIncludes(['category', 'posts', 'schedules', 'media'])
             ->allowedSorts(['title', 'created_at', 'updated_at'])

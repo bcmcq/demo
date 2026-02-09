@@ -58,8 +58,7 @@ class MediaController extends Controller
             $expiresAt,
         );
 
-        $forwardedPort = config('services.minio.forwarded_port', 9000);
-        $url = str_replace('http://minio:9000', "http://localhost:{$forwardedPort}", $url);
+        $url = Media::replaceMinioUrl($url);
 
         return response()->json([
             'url' => $url,

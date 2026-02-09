@@ -24,7 +24,7 @@ class SocialMediaAccountCategoryWeight extends Model
     /**
      * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
     protected $casts = [
         'weight' => 'integer',

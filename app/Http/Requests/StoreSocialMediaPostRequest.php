@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\SocialMediaContent;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreSocialMediaPostRequest extends FormRequest
 {
@@ -26,7 +28,8 @@ class StoreSocialMediaPostRequest extends FormRequest
             'social_media_content_id' => [
                 'required',
                 'integer',
-                'exists:social_media_contents,id',
+                Rule::exists(SocialMediaContent::class, 'id')
+                    ->where('account_id', $this->user()->account_id),
             ],
             /** @example "2026-02-09T10:00:00Z" */
             'posted_at' => [

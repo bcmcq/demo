@@ -46,7 +46,7 @@ class Media extends Model
     /**
      * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
     protected $casts = [
         'type' => MediaType::class,
@@ -77,7 +77,7 @@ class Media extends Model
             return null;
         }
 
-        return $this->replaceMinioUrl(Storage::disk('s3')->url($this->file_path));
+        return self::replaceMinioUrl(Storage::disk('s3')->url($this->file_path));
     }
 
     /**
@@ -108,8 +108,9 @@ class Media extends Model
         return null;
     }
 
-    private function replaceMinioUrl(string $url): string
+    public static function replaceMinioUrl(string $url): string
     {
-        return str_replace('http://minio:9000', 'http://localhost:9002', $url);
+        $forwardedPort = config('services.minio.forwarded_port', 9000);
+        return str_replace('http://minio:9000', "http://localhost:{$forwardedPort}", $url);
     }
 }

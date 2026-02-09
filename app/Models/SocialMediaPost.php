@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class SocialMediaPost extends Model
 {
@@ -27,7 +28,7 @@ class SocialMediaPost extends Model
     /**
      * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
     protected $casts = [
         'posted_at' => 'datetime',
@@ -41,5 +42,17 @@ class SocialMediaPost extends Model
     public function content(): BelongsTo
     {
         return $this->belongsTo(SocialMediaContent::class, 'social_media_content_id');
+    }
+
+    public function media(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Media::class,
+            SocialMediaContent::class,
+            'id',
+            'social_media_content_id',
+            'social_media_content_id',
+            'id'
+        );
     }
 }

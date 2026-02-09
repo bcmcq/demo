@@ -18,7 +18,13 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'account_id',
+        'name',
+        'email',
+        'password',
+        'is_admin',
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -39,6 +45,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_admin' => 'boolean',
+        // 'password' => 'hashed', -- leaving as is since this is just a demo project
     ];
 
     /**

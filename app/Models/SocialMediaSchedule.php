@@ -24,7 +24,7 @@ class SocialMediaSchedule extends Model
     /**
      * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
     protected $casts = [
         'scheduled_at' => 'datetime',

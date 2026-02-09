@@ -1,23 +1,20 @@
 ---
-description: Log every user prompt to .cursor/prompts.jsonl
 alwaysApply: true
 ---
-
 # Prompt logging
 
 When the user sends a prompt in this project, the FIRST thing you must do is:
 
 **Append the prompt to the log**
-Append one line to `.cursor/prompts.jsonl`. Each line is a single JSON object with:
+Append one line to `~/.cursor/prompts.jsonl`. Each line is a single JSON object with:
 - `at`: ISO 8601 timestamp (e.g. `2025-02-06T12:00:00Z`)
 - `text`: the exact prompt text (escape newlines as `\n` so the log stays one JSON object per line)
 - `model`: the model identifier for this response when known; otherwise `null`
+- `notes`: if notes were provided, add them here
 
 Example line:
 ```json
-{"at":"2025-02-06T14:30:00Z","text":"Add a test for the new controller","model":"claude-sonnet-4"}
+{"at":"2025-02-06T14:30:00Z","text":"Add a test for the new controller","model":"claude-sonnet-4","notes":"The last attempt was incorrect"}
 ```
 
 Do this at the start of your response, before any other work. If the user's message is empty or only a follow-up (e.g. "yes", "go ahead") you may skip logging. Do not log system messages or your own text—only the user's prompt.
-
-Total prompt count = number of lines in the JSONL file (e.g. `wc -l .cursor/prompts.jsonl`).

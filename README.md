@@ -1,3 +1,72 @@
+# Social Media Manager
+
+Below are the tasks completed as outlined in [_INSTRUCTIONS.md](./_INSTRUCTIONS.md).
+
+## Setup & Requirements
+
+jf
+
+## Tasks
+
+### Foundation
+
+This step was basically fixing the existing project. Updating the 6 existing [models](#the-data) missing relationships, some are completely empty. Primarly creating a baseline for how I want things to be structured. Also creating missing factories.
+
+### Basic CRUD
+
+Building out the requested [CRUD endpoints](#basic-crud) for content. These can all be found in the API docs & Postman.
+
+### Autopost
+
+Built out the [autopost feature](#extra-functionality) as outlined with weighted algotihm for selecting content to post.
+
+### AI Content Writer
+
+Integrated [prism](https://prismphp.com/) and OpenAI api to generate content as outlined [here](_ADVANCED_TASKS.md#1-ai-content-writer). Requests to rewrite or generate content are queued and dispatched by a job in the background. Another endpoint is available for checking the status, which will return the results when complete. You can set `QUEUE_CONNECTION` to `sync` in your .env file to turn off redis, which will disable the queuing and run everything synchronosly.
+
+### Media Uploads
+
+As outline [here](_ADVANCED_TASKS.md#3-media-uploads), I added the ability to upload media and associate it with content. It will accept images and videos. I added `minio` as a new docker service to simulate S3, it should spin up automatically with the project and be ready to go. There's also a video to test uploading with in `storage/test/`.
+
+Image's are uploaded directly to the server. Video uploads require that you fetch a presigned url, upload your video to that and then hit the store media route. I did both approaches just to show different methods of tackling the problem.
+
+For testing purposes, if you hit the presigned url path and then copy the response url, I created a shell script to test the upload and store after that point.
+
+```bash
+./upload.sh --save {presigned-url}
+```
+
+This will upload the sample video to the url and then hit the API to store it.
+
+### Performance & Observability
+
+Outlined [here](_ADVANCED_TASKS.md#8-performance--observability), I created a task and performance report while working on this one.
+
+- [Performance Updates & Report](_PERFORMANCE.md)
+
+### AI Usage Report
+
+This one wasn't specifically on the task list and was just for fun but it did help me complete the AI task requests under [deliverables](./_INSTRUCTIONS.md#deliverables). At the start of the project I created a [rule in cursor](./.cursor/rules/prompt-logging.mdc) that would run each time I sent a prompt and log it w/ details. As I worked, I added some notes as needed. I then prompted to generate this [AI Report](./_AI_REPORT.md) and followed up by rewriting and tweaking the output as needed.
+
+- [AI Report](./_AI_REPORT.md)
+
+### Contract-First API
+
+As [outlined here](./_ADVANCED_TASKS.md#10-contract-first-api), I integrated dedoc/scramble for API docs. Once the project is running they can be found at the links below. I'm not personally a fan of the inline comments across the codebase but it was a task so I completed it. I personally use Postman and I was adding routes to Postman for testing as I worked. So, I exported that here as well. You should be able to import the entire `postman` folder directly into Postman if you use it.
+
+- [API Docs](http://localhost/api/docs)
+- [API OpenAPI JSON](http://localhost/api/docs.json)
+- [Postman](./postman/)
+
+
+---
+---
+
+**Below is the original readme**
+
+---
+---
+
 # Laravel Social Media Manager
 
 This is the backend template for the Code Challenge.

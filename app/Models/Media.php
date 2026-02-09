@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\MediaType;
+use App\Jobs\MediaCleanupJob;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +13,17 @@ class Media extends Model
 {
     /** @use HasFactory<\Database\Factories\MediaFactory> */
     use HasFactory;
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Media $media) {
+            MediaCleanupJob::dispatch(
+                filePath: $media->file_path,
+                thumbnailPath: $media->thumbnail_path,
+                muxAssetId: $media->isVideo() ? $media->mux_asset_id : null,
+            );
+        });
+    }
 
     /**
      * The attributes that are mass assignable.

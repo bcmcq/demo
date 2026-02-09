@@ -212,6 +212,25 @@ class SocialMediaCategoryControllerTest extends BaseTestCase
         $this->assertDatabaseHas('social_media_categories', ['id' => $category->id]);
     }
 
+    public function test_destroy_fails_when_category_has_content(): void
+    {
+        $this->actingAs($this->adminUser);
+
+        $category = SocialMediaCategory::factory()->create(['name' => 'in_use']);
+
+        SocialMediaContent::factory()->create([
+            'account_id' => $this->account->id,
+            'social_media_category_id' => $category->id,
+        ]);
+
+        $response = $this->deleteJson('/api/social_media_categories/'.$category->id);
+
+        $response->assertStatus(409)
+            ->assertJsonPath('message', 'Cannot delete a category that still has content. Please remove or reassign the content first.');
+
+        $this->assertDatabaseHas('social_media_categories', ['id' => $category->id]);
+    }
+
     public function test_destroy_returns_404_for_nonexistent_category(): void
     {
         $this->actingAs($this->adminUser);

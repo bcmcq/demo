@@ -18,7 +18,7 @@ This step was basically fixing the existing project. Updating the 6 existing [mo
 
 ### Basic CRUD
 
-Building out the requested [CRUD endpoints](#basic-crud) for content. These can all be found in the API docs & Postman.
+Building out the requested [CRUD endpoints](#basic-crud) for content. These can all be found in the API docs & Postman. I also integrated `spatie/laravel-query-builder` for easily and cleanly handling query params.
 
 ### Autopost
 
@@ -32,15 +32,15 @@ Integrated [prism](https://prismphp.com/) and ~~OpenAI~~ OpenRouter (swapped bec
 
 As outline [here](_ADVANCED_TASKS.md#3-media-uploads), I added the ability to upload media and associate it with content. It will accept images and videos. I added `minio` as a new docker service to simulate S3, it should spin up automatically with the project and be ready to go. There's also a video to test uploading with in [storage/test/](./storage/test/).
 
-Image's are uploaded directly to the server. Video uploads require that you fetch a presigned url, upload your video to that and then hit the store media route. I did both approaches just to show different methods of tackling the problem.
+Images are uploaded directly to the server. Video uploads require that you fetch a presigned url, upload your video to that endpoint and then hit the store media route. I did both approaches just to show different methods of tackling the problem.
 
-For testing purposes, if you hit the presigned url path and then copy the response url, I created a shell script to test the upload and store after that point.
+For testing purposes, if you hit the presigned url path and then copy the response url, I created a simple shell script to test the upload and store easily. It will default to using the test video.
 
 ```bash
 ./upload.sh --save {presigned-url}
 ```
 
-This will upload the sample video to the url and then hit the API to store it.
+This uploads the sample video to the url and then hits the API to store it.
 
 ### Performance & Observability
 
@@ -56,7 +56,7 @@ This one wasn't specifically on the task list and was just for fun but it did he
 
 ### Contract-First API
 
-As [outlined here](./_ADVANCED_TASKS.md#10-contract-first-api), I integrated dedoc/scramble for API docs. Once the project is running they can be found at the links below. I'm not personally a fan of the inline comments across the codebase but it was a task so I completed it. I personally use Postman and I was adding routes to Postman for testing as I worked. So, I exported that here as well. You should be able to import the entire `postman` folder directly into Postman if you use it.
+As [outlined here](./_ADVANCED_TASKS.md#10-contract-first-api), I integrated dedoc/scramble for API docs. Once the project is running they can be found at the links below. I'm not personally a fan of the inline comments across the codebase but it was a task, so I completed it. I personally use Postman and I was adding routes to Postman for testing as I worked. So, I exported that here as well. You should be able to import the entire `postman` folder directly into Postman if you use it.
 
 - [API Docs](http://localhost/api/docs)
 - [API OpenAPI JSON](http://localhost/api/docs.json)

@@ -79,6 +79,12 @@ class SocialMediaCategoryController extends Controller
     #[Endpoint(operationId: 'deleteCategory')]
     public function destroy(SocialMediaCategory $socialMediaCategory): JsonResponse
     {
+        if ($socialMediaCategory->contents()->exists()) {
+            return response()->json([
+                'message' => 'Cannot delete a category that still has content. Please remove or reassign the content first.',
+            ], 409);
+        }
+
         $socialMediaCategory->delete();
 
         return response()->json([

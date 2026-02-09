@@ -11,7 +11,6 @@ use App\Jobs\GenerateVideoThumbnailJob;
 use App\Jobs\UploadToMuxJob;
 use App\Models\Media;
 use App\Models\SocialMediaContent;
-use App\Services\MuxService;
 use Dedoc\Scramble\Attributes\Endpoint;
 use Dedoc\Scramble\Attributes\Group;
 use Dedoc\Scramble\Attributes\Response;
@@ -163,23 +162,12 @@ class MediaController extends Controller
      * Delete media.
      *
      * Removes media from storage (S3 + Mux if video) and deletes the record.
+     * Cleanup of S3 files and Mux assets is handled by the Media model's deleting event.
      */
     #[Endpoint(operationId: 'deleteMedia')]
-    public function destroy(Request $request, SocialMediaContent $socialMediaContent, Media $media, MuxService $muxService): JsonResponse
+    public function destroy(Request $request, SocialMediaContent $socialMediaContent, Media $media): JsonResponse
     {
         $this->authorize('delete', [Media::class, $socialMediaContent, $media]);
-
-        if ($media->file_path) {
-            Storage::disk('s3')->delete($media->file_path);
-        }
-
-        if ($media->thumbnail_path) {
-            Storage::disk('s3')->delete($media->thumbnail_path);
-        }
-
-        if ($media->isVideo() && $media->mux_asset_id) {
-            $muxService->deleteAsset($media->mux_asset_id);
-        }
 
         $media->delete();
 

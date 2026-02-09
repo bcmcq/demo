@@ -25,7 +25,7 @@
               "query": [
                 {
                   "key": "filter[name]",
-                  "value": "example",
+                  "value": "events",
                   "disabled": true
                 },
                 {
@@ -281,7 +281,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"title\": \"Updated Content Title\",\n    \"content\": \"This is updated social media content.\",\n    \"social_media_category_id\": 1\n}"
+              "raw": "{\n    \"title\": \"Updated Content Titles\",\n    \"content\": \"This is updated social media content.\",\n    \"social_media_category_id\": 1\n}"
             },
             "url": {
               "raw": "{{domain}}/social_media_contents/1",
@@ -308,13 +308,13 @@
               }
             ],
             "url": {
-              "raw": "{{domain}}/social_media_contents/111",
+              "raw": "{{domain}}/social_media_contents/120",
               "host": [
                 "{{domain}}"
               ],
               "path": [
                 "social_media_contents",
-                "111"
+                "120"
               ]
             }
           },
@@ -403,14 +403,14 @@
               }
             ],
             "url": {
-              "raw": "{{domain}}/social_media_contents/generate/019c3f10-02f5-70bb-a837-86fbe38198a8",
+              "raw": "{{domain}}/social_media_contents/generate/019c448a-5dc8-712e-b83a-b11a2f8d6b93",
               "host": [
                 "{{domain}}"
               ],
               "path": [
                 "social_media_contents",
                 "generate",
-                "019c3f10-02f5-70bb-a837-86fbe38198a8"
+                "019c448a-5dc8-712e-b83a-b11a2f8d6b93"
               ]
             }
           },

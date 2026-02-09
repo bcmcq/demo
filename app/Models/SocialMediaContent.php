@@ -24,6 +24,13 @@ class SocialMediaContent extends Model
         'content',
     ];
 
+    protected static function booted(): void
+    {
+        static::deleting(function (SocialMediaContent $content) {
+            $content->media->each->delete();
+        });
+    }
+
     /* -------- Relationships -------- */
 
     public function account(): BelongsTo

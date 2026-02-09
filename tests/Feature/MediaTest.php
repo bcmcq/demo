@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Jobs\GenerateVideoThumbnailJob;
+use App\Jobs\MediaCleanupJob;
 use App\Jobs\UploadToMuxJob;
 use App\Models\Account;
 use App\Models\Media;
@@ -426,19 +427,14 @@ class MediaTest extends BaseTestCase
     }
 
     /** -------- DELETE IMAGE -------- */
-    public function test_delete_image_removes_file_from_s3(): void
+    public function test_delete_image_dispatches_cleanup_job(): void
     {
-        Storage::fake('s3');
-
-        $filePath = 'images/test-image.jpg';
-        Storage::disk('s3')->put($filePath, 'fake image data');
+        Bus::fake([MediaCleanupJob::class]);
 
         $media = Media::factory()->create([
             'social_media_content_id' => $this->content->id,
-            'file_path' => $filePath,
+            'file_path' => 'images/test-image.jpg',
         ]);
-
-        Storage::disk('s3')->assertExists($filePath);
 
         $response = $this->deleteJson(
             "/api/social_media_contents/{$this->content->id}/media/{$media->id}"
@@ -448,31 +444,20 @@ class MediaTest extends BaseTestCase
             ->assertJsonPath('message', 'Media deleted successfully.');
 
         $this->assertDatabaseMissing('media', ['id' => $media->id]);
-        Storage::disk('s3')->assertMissing($filePath);
+        Bus::assertDispatched(MediaCleanupJob::class);
     }
 
     /** -------- DELETE VIDEO -------- */
-    public function test_delete_video_removes_s3_files_and_calls_mux_delete(): void
+    public function test_delete_video_dispatches_cleanup_job_with_mux(): void
     {
-        Storage::fake('s3');
-
-        $videoPath = 'videos/test-video.mp4';
-        $thumbnailPath = 'thumbnails/test-thumb.jpg';
-        Storage::disk('s3')->put($videoPath, 'fake video');
-        Storage::disk('s3')->put($thumbnailPath, 'fake thumb');
+        Bus::fake([MediaCleanupJob::class]);
 
         $media = Media::factory()->video()->create([
             'social_media_content_id' => $this->content->id,
-            'file_path' => $videoPath,
-            'thumbnail_path' => $thumbnailPath,
+            'file_path' => 'videos/test-video.mp4',
+            'thumbnail_path' => 'thumbnails/test-thumb.jpg',
             'mux_asset_id' => 'asset_to_delete',
         ]);
-
-        $this->mock(MuxService::class, function (MockInterface $mock) {
-            $mock->shouldReceive('deleteAsset')
-                ->once()
-                ->with('asset_to_delete');
-        });
 
         $response = $this->deleteJson(
             "/api/social_media_contents/{$this->content->id}/media/{$media->id}"
@@ -482,8 +467,11 @@ class MediaTest extends BaseTestCase
             ->assertJsonPath('message', 'Media deleted successfully.');
 
         $this->assertDatabaseMissing('media', ['id' => $media->id]);
-        Storage::disk('s3')->assertMissing($videoPath);
-        Storage::disk('s3')->assertMissing($thumbnailPath);
+        Bus::assertDispatched(MediaCleanupJob::class, function (MediaCleanupJob $job) {
+            return $job->filePath === 'videos/test-video.mp4'
+                && $job->thumbnailPath === 'thumbnails/test-thumb.jpg'
+                && $job->muxAssetId === 'asset_to_delete';
+        });
     }
 
     /** -------- AUTHORIZATION -------- */
@@ -583,7 +571,7 @@ class MediaTest extends BaseTestCase
     }
 
     /** -------- MUX UPLOAD JOB -------- */
-    public function test_upload_to_mux_job_creates_asset_from_url(): void
+    public function test_upload_to_mux_job_uploads_file_content_directly(): void
     {
         Storage::fake('s3');
 
@@ -596,8 +584,9 @@ class MediaTest extends BaseTestCase
         ]);
 
         $muxService = $this->mock(MuxService::class, function (MockInterface $mock) {
-            $mock->shouldReceive('createAssetFromUrl')
+            $mock->shouldReceive('uploadFileContent')
                 ->once()
+                ->with('fake video content')
                 ->andReturn([
                     'asset_id' => 'asset_abc',
                     'playback_id' => 'playback_xyz',

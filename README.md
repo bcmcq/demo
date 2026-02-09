@@ -4,7 +4,11 @@ Below are the tasks completed as outlined in [_INSTRUCTIONS.md](./_INSTRUCTIONS.
 
 ## Setup & Requirements
 
-jf
+Including the dependencies of the original project that are [detailed here](#instructions). The following command should get you up and running with everything needed to test. I will need to provide you with a key.
+
+```shell
+./setup.sh --key={provided-key}
+```
 
 ## Tasks
 

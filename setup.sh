@@ -1,8 +1,24 @@
 #!/bin/bash
 set -e
 
+# Parse --key argument
+CRYPT_KEY=""
+for arg in "$@"; do
+    case "$arg" in
+        --key=*)
+            CRYPT_KEY="${arg#--key=}"
+            ;;
+    esac
+done
+
 # 1. Environment — must come first so docker-compose picks up DB_DATABASE etc.
 cp .env.example .env
+
+# Decrypt MUX tokens if a key was provided
+if [[ -n "$CRYPT_KEY" ]]; then
+    echo 'Decrypting MUX tokens…'
+    ./crypt.sh --key="$CRYPT_KEY" --decrypt
+fi
 
 # 2. Install Composer dependencies (matching PHP 8.3 runtime)
 echo 'Installing Composer dependencies…'

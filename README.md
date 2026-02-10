@@ -10,6 +10,8 @@ Including the dependencies of the original project that are [detailed here](#ins
 ./setup.sh --key={provided-key}
 ```
 
+Mux and OpenRouter are both running on test /free accounts I setup just for this so you may start hitting rate limits, etc. Swapping in your own API keys will work with no other updates needed.
+
 ## Tasks
 
 ### Foundation

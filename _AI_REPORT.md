@@ -91,11 +91,11 @@ The AI's first pass at the weighted category selection in `AutopostService` got 
 
 ### 2. Mux PHP SDK Integration — No Docs, Wrong API Calls
 
-The AI had no access to up-to-date documentation for the `muxinc/mux-php` SDK. Its initial implementation used incorrect method signatures, wrong class constructors, and a polling-based workflow that was unnecessarily complex for our use case. The AI hallucinated API methods that didn't exist in the installed version of the package.
+The AI had no access to up-to-date documentation for the `muxinc/mux-php` SDK. Its initial implementation used incorrect method signatures and wrong class constructors. The AI hallucinated API methods that didn't exist in the installed version of the package.
 
 **How I caught it:** The code failed immediately at runtime — classes weren't found, method signatures didn't match, and the asset creation flow was broken end to end.
 
-**What I did:** Rewrote the `MuxService` from scratch: fixed the `Configuration` setup (username/password, not token-based), used the correct `CreateAssetRequest` / `InputSettings` / `PlaybackPolicy` constructors, and simplified the entire flow to a synchronous direct upload instead of the polling loop the AI originally proposed. Also stripped out the unnecessary `MuxStatus` enum and database column that came from the AI's over-engineered first attempt.
+**What I did:** Rewrote parts of the `MuxService`: fixed the `Configuration` setup, used the correct `CreateAssetRequest` / `InputSettings` / `PlaybackPolicy` constructors. Also stripped out the unnecessary `Mux` enum and database column that came from the AI's over-engineered first attempt.
 
 ---
 

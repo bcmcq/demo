@@ -1,8 +1,6 @@
 <?php
 
-use App\Http\Controllers\API\AIGenerateController;
-use App\Http\Controllers\API\AIRewriteController;
-use App\Http\Controllers\API\AIStatusController;
+use App\Http\Controllers\API\AIContentController;
 use App\Http\Controllers\API\MediaController;
 use App\Http\Controllers\API\SocialMediaAutopostController;
 use App\Http\Controllers\API\SocialMediaCategoryController;
@@ -17,9 +15,9 @@ Route::middleware('auth.betterbewillie')->group(function () {
     /* Content Management */
     Route::prefix('social_media_contents')->name('social_media_contents.')->group(function () {
         Route::get('autopost', SocialMediaAutopostController::class)->name('autopost');
-        Route::post('{social_media_content}/rewrite', AIRewriteController::class)->name('rewrite');
-        Route::post('generate', AIGenerateController::class)->name('generate');
-        Route::get('generate/{content_generation_request}', AIStatusController::class)->name('generate.status');
+        Route::post('{social_media_content}/rewrite', [AIContentController::class, 'rewrite'])->name('rewrite');
+        Route::post('generate', [AIContentController::class, 'generate'])->name('generate');
+        Route::get('generate/{content_generation_request}', [AIContentController::class, 'status'])->name('generate.status');
     });
     Route::apiResource('social_media_contents', SocialMediaContentController::class);
 

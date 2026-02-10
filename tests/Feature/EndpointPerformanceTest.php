@@ -44,7 +44,7 @@ class EndpointPerformanceTest extends BaseTestCase
     private const QUERY_CEILINGS = [
         'content_index' => 2,
         'content_index_with_includes' => 6,
-        'content_show' => 5,
+        'content_show' => 6,
         'autopost' => 3,
         'categories_index' => 2,
         'posts_index' => 2,

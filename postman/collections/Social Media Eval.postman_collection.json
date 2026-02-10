@@ -159,7 +159,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{domain}}/social_media_contents?include=category,posts,schedules,media",
+              "raw": "{{domain}}/social_media_contents?include=category,posts,schedules,media,rewrites",
               "host": [
                 "{{domain}}"
               ],
@@ -191,7 +191,7 @@
                 },
                 {
                   "key": "include",
-                  "value": "category,posts,schedules,media",
+                  "value": "category,posts,schedules,media,rewrites",
                   "uuid": "1678823f-1f07-468e-bab2-0f94b6df211b"
                 },
                 {
@@ -409,14 +409,14 @@
               }
             ],
             "url": {
-              "raw": "{{domain}}/social_media_contents/generate/019c448a-5dc8-712e-b83a-b11a2f8d6b93",
+              "raw": "{{domain}}/social_media_contents/generate/019c44fd-d37e-70bd-a002-bd71384b6448",
               "host": [
                 "{{domain}}"
               ],
               "path": [
                 "social_media_contents",
                 "generate",
-                "019c448a-5dc8-712e-b83a-b11a2f8d6b93"
+                "019c44fd-d37e-70bd-a002-bd71384b6448"
               ]
             }
           },
@@ -552,6 +552,26 @@
                 "social_media_contents",
                 "1",
                 "media"
+              ],
+              "query": [
+                {
+                  "key": "filter[type]",
+                  "value": "image",
+                  "description": "Filter by media type: image, video",
+                  "disabled": true
+                },
+                {
+                  "key": "filter[file_name]",
+                  "value": "hero",
+                  "description": "Filter by partial file name match",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "-created_at",
+                  "description": "Sort by created_at or updated_at. Prefix - for descending",
+                  "disabled": true
+                }
               ]
             }
           },

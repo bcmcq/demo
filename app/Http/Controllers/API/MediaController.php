@@ -13,12 +13,15 @@ use App\Models\Media;
 use App\Models\SocialMediaContent;
 use Dedoc\Scramble\Attributes\Endpoint;
 use Dedoc\Scramble\Attributes\Group;
+use Dedoc\Scramble\Attributes\QueryParameter;
 use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 #[Group('Media', weight: 3)]
 class MediaController extends Controller
@@ -27,12 +30,25 @@ class MediaController extends Controller
      * List media for content.
      *
      * Returns all media attachments for the specified content item.
+     * Supports filtering by type and file name, and sorting.
      */
-    public function index(SocialMediaContent $socialMediaContent): AnonymousResourceCollection
+    #[QueryParameter('filter[type]', description: 'Filter by media type: image, video.', type: 'string', example: 'image')]
+    #[QueryParameter('filter[file_name]', description: 'Filter by partial file name match.', type: 'string', example: 'hero')]
+    #[QueryParameter('sort', description: 'Sort by field. Prefix with - for descending. Allowed: created_at, updated_at.', type: 'string', example: '-created_at')]
+    public function index(Request $request, SocialMediaContent $socialMediaContent): AnonymousResourceCollection
     {
         $this->authorize('viewAny', [Media::class, $socialMediaContent]);
 
-        $media = $socialMediaContent->media()->latest()->get();
+        $media = QueryBuilder::for(
+            $socialMediaContent->media()
+        )
+            ->allowedFilters([
+                AllowedFilter::exact('type'),
+                AllowedFilter::partial('file_name'),
+            ])
+            ->allowedSorts(['created_at', 'updated_at'])
+            ->defaultSort('-created_at')
+            ->get();
 
         return MediaResource::collection($media);
     }

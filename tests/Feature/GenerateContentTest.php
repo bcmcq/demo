@@ -201,13 +201,16 @@ class GenerateContentTest extends BaseTestCase
 
         $response->assertOk()
             ->assertJson([
-                'id' => $generationRequest->id,
-                'type' => 'generate',
-                'platform' => 'twitter',
-                'tone' => 'casual',
-                'status' => 'pending',
-            ])
-            ->assertJsonMissing(['generated_content', 'error']);
+                'data' => [
+                    'id' => $generationRequest->id,
+                    'type' => 'generate',
+                    'platform' => 'twitter',
+                    'tone' => 'casual',
+                    'status' => 'pending',
+                    'generated_content' => null,
+                    'error' => null,
+                ],
+            ]);
     }
 
     public function test_status_returns_processing_request(): void
@@ -224,8 +227,13 @@ class GenerateContentTest extends BaseTestCase
         $response = $this->getJson("/api/social_media_contents/generate/{$generationRequest->id}");
 
         $response->assertOk()
-            ->assertJson(['status' => 'processing'])
-            ->assertJsonMissing(['generated_content', 'error']);
+            ->assertJson([
+                'data' => [
+                    'status' => 'processing',
+                    'generated_content' => null,
+                    'error' => null,
+                ],
+            ]);
     }
 
     public function test_status_returns_completed_request_with_content(): void
@@ -250,8 +258,10 @@ class GenerateContentTest extends BaseTestCase
 
         $response->assertOk()
             ->assertJson([
-                'status' => 'completed',
-                'generated_content' => $variations,
+                'data' => [
+                    'status' => 'completed',
+                    'generated_content' => $variations,
+                ],
             ]);
     }
 
@@ -271,8 +281,10 @@ class GenerateContentTest extends BaseTestCase
 
         $response->assertOk()
             ->assertJson([
-                'status' => 'failed',
-                'error' => 'API rate limit exceeded.',
+                'data' => [
+                    'status' => 'failed',
+                    'error' => 'API rate limit exceeded.',
+                ],
             ]);
     }
 

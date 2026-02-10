@@ -159,7 +159,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{domain}}/social_media_contents?filter[media]=true&include=category,posts,schedules,media",
+              "raw": "{{domain}}/social_media_contents?include=category,posts,schedules,media",
               "host": [
                 "{{domain}}"
               ],
@@ -186,8 +186,8 @@
                 {
                   "key": "filter[media]",
                   "value": "true",
-                  "type": "text",
-                  "uuid": "46f209cb-32d2-4425-a59a-d4dbcf6a6185"
+                  "uuid": "46f209cb-32d2-4425-a59a-d4dbcf6a6185",
+                  "disabled": true
                 },
                 {
                   "key": "include",

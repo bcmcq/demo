@@ -90,10 +90,10 @@ class AIContentController extends Controller
      */
     #[Endpoint(operationId: 'generationStatus')]
     #[Response(200, description: 'Generation request status.', type: 'array{id: string, type: string, platform: string, tone: string, status: string, generated_content?: string, error?: string}')]
-    public function status(ContentGenerationRequest $contentGenerationRequest): JsonResponse
+    public function status(ContentGenerationRequest $contentGenerationRequest): ContentGenerationRequestResource
     {
         $this->authorize('statusCheck', [SocialMediaContent::class, $contentGenerationRequest]);
 
-        return (new ContentGenerationRequestResource($contentGenerationRequest))->toResponse(request());
+        return new ContentGenerationRequestResource($contentGenerationRequest);
     }
 }

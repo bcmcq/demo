@@ -21,7 +21,7 @@ class MediaPolicy
      */
     public function view(User $user, SocialMediaContent $socialMediaContent, Media $media): bool
     {
-        return $user->account_id === $socialMediaContent->account_id;
+        return $user->account_id === $socialMediaContent->account_id && $media->social_media_content_id === $socialMediaContent->id;
     }
 
     /**
@@ -37,6 +37,6 @@ class MediaPolicy
      */
     public function delete(User $user, SocialMediaContent $socialMediaContent, Media $media): bool
     {
-        return $user->account_id === $socialMediaContent->account_id;
+        return $user->account_id === $socialMediaContent->account_id && $media->social_media_content_id === $socialMediaContent->id;
     }
 }

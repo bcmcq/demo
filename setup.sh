@@ -43,7 +43,4 @@ echo 'Running migrations and seeding…'
 ./vendor/bin/sail artisan key:generate
 ./vendor/bin/sail artisan migrate:fresh --seed
 
-echo 'Creating testing database…'
-./vendor/bin/sail exec -T mysql bash -c 'mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS testing;"'
-
 echo 'Done! Visit http://localhost'

@@ -35,7 +35,7 @@ class SocialMediaContentController extends Controller
     #[QueryParameter('filter[posts]', description: 'Filter by post existence: 1 = has posts, 0 = no posts.', type: 'string', example: '1')]
     #[QueryParameter('filter[schedules]', description: 'Filter by schedule existence: 1 = has schedules, 0 = no schedules.', type: 'string', example: '0')]
     #[QueryParameter('filter[media]', description: 'Filter by media existence: 1 = has media, 0 = no media.', type: 'string', example: '1')]
-    #[QueryParameter('include', description: 'Comma-separated relationships to include: category, posts, schedules, media.', type: 'string', example: 'category,media')]
+    #[QueryParameter('include', description: 'Comma-separated relationships to include: category, posts, schedules, media, rewrites.', type: 'string', example: 'category,media')]
     #[QueryParameter('sort', description: 'Sort by field. Prefix with - for descending. Allowed: title, created_at, updated_at.', type: 'string', example: '-created_at')]
     #[QueryParameter('per_page', description: 'Number of items per page.', type: 'int', default: 15, example: 25)]
     public function index(Request $request): AnonymousResourceCollection
@@ -49,7 +49,7 @@ class SocialMediaContentController extends Controller
                 AllowedFilter::custom('schedules', new HasRelationFilter),
                 AllowedFilter::custom('media', new HasRelationFilter),
             ])
-            ->allowedIncludes(['category', 'posts', 'schedules', 'media'])
+            ->allowedIncludes(['category', 'posts', 'schedules', 'media', 'rewrites'])
             ->allowedSorts(['title', 'created_at', 'updated_at'])
             ->defaultSort('-created_at')
             ->paginate($request->input('per_page', 15));
@@ -60,11 +60,11 @@ class SocialMediaContentController extends Controller
     /**
      * Get content.
      *
-     * Returns a single content item with its category, posts, schedules, and media.
+     * Returns a single content item with its category, posts, schedules, media, and rewrites.
      */
     public function show(SocialMediaContent $socialMediaContent): SocialMediaContentResource
     {
-        $socialMediaContent->load(['category', 'posts', 'schedules', 'media']);
+        $socialMediaContent->load(['category', 'posts', 'schedules', 'media', 'rewrites']);
 
         return new SocialMediaContentResource($socialMediaContent);
     }

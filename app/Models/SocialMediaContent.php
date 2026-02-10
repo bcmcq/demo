@@ -58,6 +58,14 @@ class SocialMediaContent extends Model
         return $this->hasMany(Media::class);
     }
 
+    /**
+     * AI rewrite requests for this content.
+     */
+    public function rewrites(): HasMany
+    {
+        return $this->hasMany(ContentGenerationRequest::class)->where('type', 'rewrite');
+    }
+
     /* -------- Query Scopes -------- */
 
     /**

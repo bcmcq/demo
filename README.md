@@ -22,7 +22,7 @@ This step was basically fixing the existing project. Updating the 6 existing [mo
 
 ### Basic CRUD
 
-Building out the requested [CRUD endpoints](#basic-crud) for content. These can all be found in the API docs & Postman. I also integrated `spatie/laravel-query-builder` for easily and cleanly handling query params.
+Building out the requested [CRUD endpoints](#endpoints) for content. These can all be found in the API docs & Postman. I also integrated `spatie/laravel-query-builder` for easily and cleanly handling query params.
 
 ### Autopost
 

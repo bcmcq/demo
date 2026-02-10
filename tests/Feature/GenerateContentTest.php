@@ -41,7 +41,7 @@ class GenerateContentTest extends BaseTestCase
         ]);
 
         $response->assertStatus(202)
-            ->assertJsonStructure(['message', 'generation_request_id']);
+            ->assertJsonStructure(['message', 'data' => ['generation_request_id']]);
 
         Queue::assertPushed(GenerateContentJob::class, function (GenerateContentJob $job) {
             return $job->contentGenerationRequest->type === 'generate'
